@@ -1,7 +1,7 @@
 // Cloudflare Worker for Dementia Day Clock API
 
 // Allowed origin for CORS
-const ALLOWED_ORIGIN = "https://caregiver-tools-dayclock.pages.dev";
+const ALLOWED_ORIGIN = "https://caregiver-tools.pages.dev";
 
 // Name of the KV Namespace binding
 // This must match the binding you set up in the Worker's settings.
