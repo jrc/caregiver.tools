@@ -174,6 +174,7 @@
         </div>
 
         <script src="moment-2.30.1.min.js"></script>
+        <script src="eff_short_wordlist_1.js"></script>
         <script>
             (function () {
                 "use strict";
@@ -209,7 +210,108 @@
                     return decodeURIComponent(results[2].replace(/\+/g, " "));
                 }
 
-                var clockId = getQueryParam("clock_id");
+                /**
+                 * Generates a random clock ID that's human-friendly
+                 */
+                function generateClockId() {
+                    var randomIndex1 = Math.floor(
+                        Math.random() * EFF_SHORT_WORDLIST.length,
+                    );
+                    var randomIndex2 = Math.floor(
+                        Math.random() * EFF_SHORT_WORDLIST.length,
+                    );
+                    var randomIndex3 = Math.floor(
+                        Math.random() * EFF_SHORT_WORDLIST.length,
+                    );
+                    return (
+                        EFF_SHORT_WORDLIST[randomIndex1] +
+                        "-" +
+                        EFF_SHORT_WORDLIST[randomIndex2] +
+                        "-" +
+                        EFF_SHORT_WORDLIST[randomIndex3]
+                    );
+                }
+
+                /**
+                 * Updates the URL with a new clock ID without reloading the page
+                 */
+                function updateURL(clockId) {
+                    var url = new URL(window.location);
+                    url.searchParams.set("id", clockId);
+                    if (window.history && window.history.pushState) {
+                        window.history.pushState({}, "", url.toString());
+                    }
+                }
+
+                /**
+                 * Fetches the announcement message from the Worker API.
+                 * @param {string} id - The clock ID.
+                 * @returns {Promise<Object|null>} A promise that resolves with the message data
+                 *   (e.g., { message: "...", imageUrl: "..." }) or null if not found or an error occurs.
+                 */
+                function fetchClockData(id) {
+                    return new Promise(function (resolve) {
+                        if (!id) {
+                            console.error(
+                                "fetchClockData: No clock ID provided.",
+                            );
+                            resolve(null);
+                            return;
+                        }
+
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("GET", API_ENDPOINT + "?clock_id=" + id, true);
+
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4) {
+                                // 4 = DONE
+                                if (xhr.status === 200) {
+                                    try {
+                                        var response = JSON.parse(
+                                            xhr.responseText,
+                                        );
+                                        resolve(response);
+                                    } catch (e) {
+                                        console.error(
+                                            "Error parsing response:",
+                                            e,
+                                        );
+                                        resolve(null);
+                                    }
+                                } else if (xhr.status === 404) {
+                                    console.log(
+                                        "Data not found for clock_id:",
+                                        id,
+                                    );
+                                    resolve(null); // Explicitly resolve with null for 404
+                                } else {
+                                    console.error(
+                                        "Error fetching data. Status:",
+                                        xhr.status,
+                                    );
+                                    resolve(null);
+                                }
+                            }
+                        };
+
+                        xhr.onerror = function () {
+                            console.error(
+                                "A network error occurred while fetching data.",
+                            );
+                            resolve(null);
+                        };
+
+                        xhr.send();
+                    });
+                }
+
+                var clockId = getQueryParam("id");
+
+                // If no clock ID is provided, generate one and update the URL
+                if (!clockId) {
+                    clockId = generateClockId();
+                    updateURL(clockId);
+                }
 
                 /**
                  * Updates the time, date, and part of day on the screen.
@@ -283,54 +385,23 @@
                 }
 
                 /**
-                 * Fetches the announcement message from the Cloudflare Worker.
+                 * Fetches and displays the announcement message, hiding the section if empty or not found.
                  */
-                function fetchMessage() {
-                    if (!clockId) {
-                        announcementElement.textContent =
-                            "Error: No Clock ID provided.";
-                        return;
-                    }
+                async function fetchClockDataAndUpdateUI() {
+                    var responseData = await fetchClockData(clockId);
 
-                    var xhr = new XMLHttpRequest();
-                    xhr.open(
-                        "GET",
-                        API_ENDPOINT + "?clock_id=" + clockId,
-                        true,
-                    );
-
-                    xhr.onreadystatechange = function () {
-                        if (xhr.readyState === 4) {
-                            // 4 = DONE
-                            if (xhr.status === 200) {
-                                try {
-                                    var response = JSON.parse(xhr.responseText);
-                                    announcementElement.textContent =
-                                        response.message || "";
-                                } catch (e) {
-                                    console.error(
-                                        "Error parsing message response:",
-                                        e,
-                                    );
-                                    announcementElement.textContent = " "; // Clear message on error
-                                }
-                            } else {
-                                console.error(
-                                    "Error fetching message. Status:",
-                                    xhr.status,
-                                );
-                                // Don't show an error on the screen, just log it.
-                            }
+                    if (responseData && responseData.message) {
+                        announcementElement.textContent = responseData.message;
+                        if (middleSectionElement) {
+                            middleSectionElement.style.display = ""; // Show it
                         }
-                    };
-
-                    xhr.onerror = function () {
-                        console.error(
-                            "A network error occurred while fetching the message.",
-                        );
-                    };
-
-                    xhr.send();
+                    } else {
+                        announcementElement.textContent = ""; // Clear message
+                        // Hide the middle section if no message or an error occurred
+                        if (middleSectionElement) {
+                            middleSectionElement.style.display = "none";
+                        }
+                    }
                 }
 
                 // --- Initial Setup ---
@@ -338,18 +409,12 @@
                 updateTime();
                 scheduleNextUpdateTime();
 
-                if (clockId) {
-                    // Fetch message only if clockId is provided
-                    fetchMessage();
-                    setInterval(fetchMessage, MESSAGE_REFRESH_INTERVAL);
-                } else {
-                    // Clear announcement if no clock_id, no error message
-                    announcementElement.textContent = "";
-                    // Hide the middle section if no clock_id
-                    if (middleSectionElement) {
-                        middleSectionElement.style.display = "none";
-                    }
-                }
+                // Initial fetch and periodic refresh for data
+                fetchClockDataAndUpdateUI();
+                setInterval(
+                    fetchClockDataAndUpdateUI,
+                    MESSAGE_REFRESH_INTERVAL,
+                );
             })();
         </script>
     </body>

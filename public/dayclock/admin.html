@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Day Clock Admin - Caregiver.tools</title>
+        <title>Dementia Day Clock Admin - Caregiver.tools</title>
         <style>
             body {
                 font-family: system-ui, sans-serif;
@@ -308,8 +308,8 @@
                         window.location.origin +
                         window.location.pathname.replace("admin", "");
 
-                    clockUrlInput.value = `${baseUrl}clock?clock_id=${newClockId}`;
-                    adminUrlInput.value = `${window.location.pathname}?clock_id=${newClockId}`;
+                    clockUrlInput.value = `${baseUrl}clock?id=${newClockId}`;
+                    adminUrlInput.value = `${window.location.pathname}?id=${newClockId}`;
 
                     urlsContainer.classList.remove("hidden");
 
@@ -332,9 +332,9 @@
 
                 // --- Initial Page Load ---
 
-                // Check for a clock_id in the URL to pre-populate the form
+                // Check for an id in the URL to pre-populate the form
                 const urlParams = new URLSearchParams(window.location.search);
-                const clockIdFromUrl = urlParams.get("clock_id");
+                const clockIdFromUrl = urlParams.get("id");
 
                 if (clockIdFromUrl) {
                     clockIdInput.value = clockIdFromUrl;
