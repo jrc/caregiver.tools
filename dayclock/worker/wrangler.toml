@@ -1,5 +1,5 @@
 name = "caregiver-tools-dayclock"
-main = "src/index.js"
+main = "index.js"
 compatibility_date = "2025-07-05"
 
 [vars]
