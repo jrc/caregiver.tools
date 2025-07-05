@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Day Clock Admin - Caregiver.tools</title>
+        <style>
+            body {
+                font-family: system-ui, sans-serif;
+                max-width: 600px;
+                margin: 2rem auto;
+                padding: 0 1rem;
+                line-height: 1.6;
+            }
+            h1,
+            h2 {
+                color: #333;
+            }
+            .input-group {
+                margin-bottom: 1rem;
+            }
+            label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: bold;
+            }
+            input[type="text"],
+            textarea {
+                width: 100%;
+                padding: 0.5rem;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 1rem;
+                box-sizing: border-box;
+            }
+            textarea {
+                resize: vertical;
+                min-height: 100px;
+            }
+            button {
+                background-color: #007bff;
+                color: white;
+                padding: 0.75rem 1.5rem;
+                border: none;
+                border-radius: 4px;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+            button:hover {
+                background-color: #0056b3;
+            }
+            .urls {
+                margin-top: 2rem;
+                padding: 1rem;
+                background-color: #f4f4f4;
+                border-radius: 4px;
+                word-wrap: break-word;
+            }
+            .status {
+                margin-top: 1rem;
+                padding: 0.75rem;
+                border-radius: 4px;
+                display: none;
+            }
+            .status.success {
+                background-color: #d4edda;
+                color: #155724;
+            }
+            .status.error {
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+            .hidden {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Dementia Day Clock Admin</h1>
+
+        <div id="generate-section">
+            <h2>1. Create a New Clock</h2>
+            <p>
+                Click the button below to generate a new, unique ID for your
+                clock.
+            </p>
+            <button id="generate-id-btn">Generate New Clock ID</button>
+            <div id="urls-container" class="urls hidden">
+                <p>
+                    <strong>Important:</strong> Save these URLs. The Admin URL
+                    is needed to change the message later.
+                </p>
+                <div class="input-group">
+                    <label for="clock-url"
+                        >Clock URL (for the person with dementia):</label
+                    >
+                    <input type="text" id="clock-url" readonly />
+                </div>
+                <div class="input-group">
+                    <label for="admin-url"
+                        >Admin URL (for you, the caregiver):</label
+                    >
+                    <input type="text" id="admin-url" readonly />
+                </div>
+            </div>
+        </div>
+
+        <hr style="margin: 2rem 0" />
+
+        <div id="manage-section">
+            <h2>2. Manage Your Clock</h2>
+            <p>
+                Enter your Clock ID below, or use your saved Admin URL to have
+                it filled automatically.
+            </p>
+            <div class="input-group">
+                <label for="clock-id-input">Your Clock ID</label>
+                <input
+                    type="text"
+                    id="clock-id-input"
+                    placeholder="e.g., gentle-river-rose"
+                />
+            </div>
+            <div class="input-group">
+                <label for="message-input">Message to Display</label>
+                <textarea
+                    id="message-input"
+                    placeholder="e.g., Don't forget your doctor's appointment at 2 PM."
+                ></textarea>
+            </div>
+            <button id="save-message-btn">Save Message</button>
+            <div id="status-message" class="status"></div>
+        </div>
+
+        <script>
+            (function () {
+                "use strict";
+
+                // --- Configuration ---
+                const API_ENDPOINT =
+                    "https://caregiver-tools-dayclock.jrcplus.workers.dev";
+
+                // --- DOM Elements ---
+                const generateIdBtn =
+                    document.getElementById("generate-id-btn");
+                const urlsContainer = document.getElementById("urls-container");
+                const clockUrlInput = document.getElementById("clock-url");
+                const adminUrlInput = document.getElementById("admin-url");
+                const clockIdInput = document.getElementById("clock-id-input");
+                const messageInput = document.getElementById("message-input");
+                const saveMessageBtn =
+                    document.getElementById("save-message-btn");
+                const statusMessage = document.getElementById("status-message");
+
+                // Word lists for generating a typeable clock_id
+                const adjectives = [
+                    "gentle",
+                    "happy",
+                    "calm",
+                    "bright",
+                    "golden",
+                    "quiet",
+                    "lucky",
+                    "sunny",
+                    "warm",
+                    "easy",
+                ];
+                const nouns = [
+                    "river",
+                    "sun",
+                    "moon",
+                    "star",
+                    "lake",
+                    "hill",
+                    "breeze",
+                    "meadow",
+                    "ocean",
+                    "forest",
+                ];
+                const nouns2 = [
+                    "rose",
+                    "lily",
+                    "daisy",
+                    "cloud",
+                    "sky",
+                    "dew",
+                    "song",
+                    "stone",
+                    "water",
+                    "leaf",
+                ];
+
+                /**
+                 * Generates a random, typeable clock ID.
+                 */
+                function generateClockId() {
+                    const adj =
+                        adjectives[
+                            Math.floor(Math.random() * adjectives.length)
+                        ];
+                    const noun1 =
+                        nouns[Math.floor(Math.random() * nouns.length)];
+                    const noun2 =
+                        nouns2[Math.floor(Math.random() * nouns2.length)];
+                    return `${adj}-${noun1}-${noun2}`;
+                }
+
+                /**
+                 * Displays a status message to the user.
+                 * @param {string} text - The message to display.
+                 * @param {boolean} isError - True if the message is an error.
+                 */
+                function showStatus(text, isError = false) {
+                    statusMessage.textContent = text;
+                    statusMessage.className = isError
+                        ? "status error"
+                        : "status success";
+                    statusMessage.style.display = "block";
+                }
+
+                /**
+                 * Fetches the current message for a given clock ID.
+                 * @param {string} clockId - The ID of the clock.
+                 */
+                async function fetchCurrentMessage(clockId) {
+                    if (!clockId) return;
+                    try {
+                        const response = await fetch(
+                            `${API_ENDPOINT}?clock_id=${clockId}`,
+                        );
+                        if (response.status === 404) {
+                            messageInput.value = ""; // No message set yet
+                            return;
+                        }
+                        if (!response.ok) {
+                            throw new Error(
+                                `Server responded with status: ${response.status}`,
+                            );
+                        }
+                        const data = await response.json();
+                        messageInput.value = data.message || "";
+                    } catch (error) {
+                        console.error("Error fetching current message:", error);
+                        showStatus(
+                            "Could not retrieve the current message.",
+                            true,
+                        );
+                    }
+                }
+
+                /**
+                 * Saves the message to the backend.
+                 */
+                async function saveMessage() {
+                    const clockId = clockIdInput.value.trim();
+                    const message = messageInput.value.trim();
+
+                    if (!clockId) {
+                        showStatus("Clock ID cannot be empty.", true);
+                        return;
+                    }
+
+                    saveMessageBtn.disabled = true;
+                    saveMessageBtn.textContent = "Saving...";
+                    statusMessage.style.display = "none";
+
+                    try {
+                        const response = await fetch(API_ENDPOINT, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                clock_id: clockId,
+                                message: message,
+                                imageUrl: null, // For future use
+                            }),
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(
+                                `Server responded with status: ${response.status}`,
+                            );
+                        }
+
+                        const data = await response.json();
+                        showStatus(
+                            `Message saved successfully for "${data.clock_id}"!`,
+                            false,
+                        );
+                    } catch (error) {
+                        console.error("Error saving message:", error);
+                        showStatus(
+                            "Failed to save message. Please check the Clock ID and your connection.",
+                            true,
+                        );
+                    } finally {
+                        saveMessageBtn.disabled = false;
+                        saveMessageBtn.textContent = "Save Message";
+                    }
+                }
+
+                // --- Event Listeners ---
+
+                // Generate New Clock ID button
+                generateIdBtn.addEventListener("click", () => {
+                    const newClockId = generateClockId();
+                    const baseUrl =
+                        window.location.origin +
+                        window.location.pathname.replace("admin", "");
+
+                    clockUrlInput.value = `${baseUrl}clock?clock_id=${newClockId}`;
+                    adminUrlInput.value = `${window.location.pathname}?clock_id=${newClockId}`;
+
+                    urlsContainer.classList.remove("hidden");
+
+                    // Also populate the management form
+                    clockIdInput.value = newClockId;
+                    messageInput.value = ""; // Clear message for new clock
+                    statusMessage.style.display = "none";
+                });
+
+                // Save Message button
+                saveMessageBtn.addEventListener("click", saveMessage);
+
+                // When the Clock ID input changes, try to fetch the current message
+                clockIdInput.addEventListener("change", () => {
+                    const clockId = clockIdInput.value.trim();
+                    if (clockId) {
+                        fetchCurrentMessage(clockId);
+                    }
+                });
+
+                // --- Initial Page Load ---
+
+                // Check for a clock_id in the URL to pre-populate the form
+                const urlParams = new URLSearchParams(window.location.search);
+                const clockIdFromUrl = urlParams.get("clock_id");
+
+                if (clockIdFromUrl) {
+                    clockIdInput.value = clockIdFromUrl;
+                    fetchCurrentMessage(clockIdFromUrl); // Fetch message on load
+                    document
+                        .getElementById("manage-section")
+                        .scrollIntoView({ behavior: "smooth" });
+                }
+            })();
+        </script>
+    </body>
+</html>

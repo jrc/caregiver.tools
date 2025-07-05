@@ -1,0 +1,10 @@
+name = "caregiver-tools-dayclock"
+main = "src/index.js"
+compatibility_date = "2025-07-05"
+
+[vars]
+API_ORIGIN = "https://caregiver.tools"
+
+[[kv_namespaces]]
+binding = "DAYCLOCK_KV"
+id = "88b62fdc8ff04a9fa1857ecaaf4cb4f3" # From Cloudflare Dashboard (Workers & Pages -> KV -> Your Namespace -> Settings)

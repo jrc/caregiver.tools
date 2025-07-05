@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <title>Day Clock</title>
+        <style>
+            html,
+            body {
+                height: 100%;
+            }
+
+            body {
+                margin: 0;
+                font-family: system-ui, sans-serif;
+            }
+
+            #container {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .theme-dark {
+                background-color: black;
+                color: rgba(255, 0, 0, 0.4);
+            }
+
+            .section {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+
+            .section-top {
+                background-color: white;
+            }
+
+            .morning .section-top {
+                background-color: #ffffe0;
+            }
+
+            .afternoon .section-top {
+                background-color: #87cefa;
+            }
+
+            .evening .section-top {
+                background-color: #ffdab9;
+            }
+
+            .bedtime .section-top {
+                background-color: #000000;
+            }
+
+            .section-middle {
+                background-color: rgb(255, 255, 255);
+            }
+
+            .section-bottom {
+                background-image: url("photo.jpg");
+                background-size: cover;
+                background-position: center;
+                /* display: none; /* Always hide this section as photos are not supported */ */
+            }
+
+            .theme-dark .section-top,
+            .theme-dark .section-middle,
+            .theme-dark .section-bottom {
+                background-color: transparent;
+            }
+
+            .theme-dark .section:not(:first-child) {
+                display: none;
+            }
+
+            /* 1. Part of Day */
+            .partofday {
+                font-size: 7rem;
+                font-weight: 900;
+                text-transform: uppercase;
+            }
+
+            /* 2. Weekday */
+            .weekday {
+                font-size: 6rem;
+                font-weight: 700;
+            }
+
+            /* 3. Current Time */
+            .time {
+                font-size: 4.5rem;
+                font-weight: 700;
+            }
+
+            /* 4. Date */
+            .date {
+                font-size: 3.5rem;
+                font-weight: 400;
+            }
+
+            .announcement {
+                font-size: 2.5rem;
+                font-weight: normal;
+                margin: 2rem;
+            }
+
+            @media (max-width: 768px) {
+                .partofday {
+                    font-size: 5rem;
+                }
+                .weekday {
+                    font-size: 4rem;
+                }
+                .time {
+                    font-size: 3.5rem;
+                }
+                .date {
+                    font-size: 2.5rem;
+                }
+                .announcement {
+                    font-size: 2rem;
+                    margin: 1rem;
+                }
+            }
+
+            @media screen and (orientation: portrait) {
+                .section-top,
+                .section-bottom {
+                    flex: 4;
+                }
+
+                .section-middle {
+                    flex: 1;
+                }
+            }
+
+            @media screen and (orientation: landscape) {
+                .section-top {
+                    flex: 4;
+                }
+
+                .section-middle {
+                    flex: 1;
+                }
+
+                /* Keeping the bottom section hidden in landscape as per your original CSS */
+                .section:last-child {
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="container">
+            <div class="section section-top">
+                <div>
+                    <div class="partofday" id="partofday"></div>
+                    <div class="weekday" id="weekday"></div>
+                    <div class="time" id="time"></div>
+                    <div class="date" id="date"></div>
+                </div>
+            </div>
+            <div class="section section-middle" id="section-middle-div">
+                <div>
+                    <div class="announcement" id="announcement"></div>
+                </div>
+            </div>
+            <div class="section section-bottom"></div>
+        </div>
+
+        <script src="moment-2.30.1.min.js"></script>
+        <script>
+            (function () {
+                "use strict";
+
+                // --- Configuration ---
+                var API_ENDPOINT =
+                    "https://caregiver-tools-dayclock.jrcplus.workers.dev";
+                var MESSAGE_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 min
+
+                // --- DOM Elements ---
+                var dateElement = document.getElementById("date");
+                var weekdayElement = document.getElementById("weekday");
+                var timeElement = document.getElementById("time");
+                var partOfDayElement = document.getElementById("partofday");
+                var announcementElement =
+                    document.getElementById("announcement");
+                var containerElement = document.getElementById("container");
+                var middleSectionElement =
+                    document.getElementById("section-middle-div");
+
+                /**
+                 * Helper function to get a query parameter from the URL.
+                 * Needed for Safari 9 compatibility, which doesn't support URLSearchParams.
+                 * @param {string} name - The name of the query parameter.
+                 * @returns {string|null} The value of the parameter or null if not found.
+                 */
+                function getQueryParam(name) {
+                    name = name.replace(/[\[\]]/g, "\\$&");
+                    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
+                    var results = regex.exec(window.location.href);
+                    if (!results) return null;
+                    if (!results[2]) return "";
+                    return decodeURIComponent(results[2].replace(/\+/g, " "));
+                }
+
+                var clockId = getQueryParam("clock_id");
+
+                /**
+                 * Updates the time, date, and part of day on the screen.
+                 */
+                function updateTime() {
+                    var now = moment();
+
+                    // Set Date, Weekday, and Time using moment.js for localization
+                    dateElement.textContent = now.format("LL"); // e.g., "July 4, 2025"
+                    weekdayElement.textContent = now.format("dddd"); // e.g., "Friday"
+                    timeElement.textContent = now.format("LT"); // e.g., "3:14 PM"
+
+                    // Determine and display the part of the day
+                    var hour = now.hours();
+                    var partOfDay = "";
+                    var bodyClass = "";
+
+                    if (hour >= 5 && hour < 12) {
+                        partOfDay = "It’s Morning";
+                        bodyClass = "morning";
+                    } else if (hour >= 12 && hour < 17) {
+                        partOfDay = "It’s Afternoon";
+                        bodyClass = "afternoon";
+                    } else if (hour >= 17 && hour < 21) {
+                        partOfDay = "It’s Evening";
+                        bodyClass = "evening";
+                    } else {
+                        partOfDay = "It’s Bedtime";
+                        bodyClass = "bedtime";
+                    }
+                    partOfDayElement.textContent = partOfDay;
+
+                    // Add/remove the theme-dark class based on the time of day
+                    if (bodyClass === "bedtime") {
+                        document.body.classList.add("theme-dark");
+                    } else {
+                        document.body.classList.remove("theme-dark");
+                    }
+
+                    // Update the body class for time-based styling
+                    document.body.classList.remove(
+                        "morning",
+                        "afternoon",
+                        "evening",
+                        "bedtime",
+                    );
+                    document.body.classList.add(bodyClass);
+                }
+
+                /**
+                 * Schedules the next updateTime call to occur at the beginning of the next minute.
+                 */
+                function scheduleNextUpdateTime() {
+                    var now = new Date();
+                    var seconds = now.getSeconds();
+                    var milliseconds = now.getMilliseconds();
+
+                    // Calculate milliseconds until the next full minute (seconds = 0, milliseconds = 0)
+                    var delay = (60 - seconds) * 1000 - milliseconds;
+
+                    // If the calculated delay is negative or zero (meaning we are past the minute mark,
+                    // or exactly on it), schedule for the *next* minute.
+                    if (delay <= 0) {
+                        delay += 60 * 1000; // Add a full minute
+                    }
+
+                    setTimeout(function () {
+                        updateTime();
+                        scheduleNextUpdateTime();
+                    }, delay);
+                }
+
+                /**
+                 * Fetches the announcement message from the Cloudflare Worker.
+                 */
+                function fetchMessage() {
+                    if (!clockId) {
+                        announcementElement.textContent =
+                            "Error: No Clock ID provided.";
+                        return;
+                    }
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.open(
+                        "GET",
+                        API_ENDPOINT + "?clock_id=" + clockId,
+                        true,
+                    );
+
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4) {
+                            // 4 = DONE
+                            if (xhr.status === 200) {
+                                try {
+                                    var response = JSON.parse(xhr.responseText);
+                                    announcementElement.textContent =
+                                        response.message || "";
+                                } catch (e) {
+                                    console.error(
+                                        "Error parsing message response:",
+                                        e,
+                                    );
+                                    announcementElement.textContent = " "; // Clear message on error
+                                }
+                            } else {
+                                console.error(
+                                    "Error fetching message. Status:",
+                                    xhr.status,
+                                );
+                                // Don't show an error on the screen, just log it.
+                            }
+                        }
+                    };
+
+                    xhr.onerror = function () {
+                        console.error(
+                            "A network error occurred while fetching the message.",
+                        );
+                    };
+
+                    xhr.send();
+                }
+
+                // --- Initial Setup ---
+                // Always update time
+                updateTime();
+                scheduleNextUpdateTime();
+
+                if (clockId) {
+                    // Fetch message only if clockId is provided
+                    fetchMessage();
+                    setInterval(fetchMessage, MESSAGE_REFRESH_INTERVAL);
+                } else {
+                    // Clear announcement if no clock_id, no error message
+                    announcementElement.textContent = "";
+                    // Hide the middle section if no clock_id
+                    if (middleSectionElement) {
+                        middleSectionElement.style.display = "none";
+                    }
+                }
+            })();
+        </script>
+    </body>
+</html>
