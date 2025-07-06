@@ -176,29 +176,35 @@
     <script src="eff_short_wordlist_1.js"></script>
     <script src="script.js"></script>
     <script>
-        (async function () {
+        (function () {
             "use strict";
 
             // --- DOM Elements ---
-            const qrcodeDisplay = document.getElementById("qrcode-display");
-            const clockUrlElements = document.querySelectorAll(".clock-url");
+            var qrcodeDisplay = document.getElementById("qrcode-display");
+            var clockUrlElements = document.querySelectorAll(".clock-url");
 
             // --- Initial Page Load ---
 
             // Generate a unique clock ID by checking for collisions
-            const clockId = await window.CaregiverTools.generateUniqueClockId();
+            window.CaregiverTools.generateUniqueClockId().then(
+                function (clockId) {
+                    // Populate URLs
+                    // Construct the base URL for clock.html, assuming it's in the same directory.
+                    var baseUrl = window.location.href.replace(
+                        "/index",
+                        "/clock",
+                    );
+                    var fullClockUrl = baseUrl + "?id=" + clockId;
 
-            // Populate URLs
-            // Construct the base URL for clock.html, assuming it's in the same directory.
-            const baseUrl = window.location.href.replace("/index", "/clock");
-            const fullClockUrl = `${baseUrl}?id=${clockId}`;
-            clockUrlElements.forEach((element) => {
-                element.textContent = fullClockUrl;
-            });
+                    for (var i = 0; i < clockUrlElements.length; i++) {
+                        clockUrlElements[i].textContent = fullClockUrl;
+                    }
 
-            // Clear previous QR code and generate new one
-            qrcodeDisplay.innerHTML = "";
-            new QRCode(qrcodeDisplay, { text: fullClockUrl });
+                    // Clear previous QR code and generate new one
+                    qrcodeDisplay.innerHTML = "";
+                    new QRCode(qrcodeDisplay, { text: fullClockUrl });
+                },
+            );
         })();
     </script>
 </html>

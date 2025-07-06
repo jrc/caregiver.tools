@@ -1,88 +1,98 @@
 (function () {
-    "use strict";
+  "use strict";
 
-    // --- Configuration ---
-    const API_ENDPOINT = "https://caregiver-tools-dayclock.jrcplus.workers.dev";
+  // --- Configuration ---
+  var API_ENDPOINT = "https://caregiver-tools-dayclock.jrcplus.workers.dev";
 
-    /**
-     * Generates a random, typeable clock ID.
-     */
-    function generateClockId() {
-        // Assuming EFF_SHORT_WORDLIST is available globally from eff_short_wordlist_1.js
-        var randomIndex1 = Math.floor(
-            Math.random() * EFF_SHORT_WORDLIST.length,
-        );
-        var randomIndex2 = Math.floor(
-            Math.random() * EFF_SHORT_WORDLIST.length,
-        );
-        var randomIndex3 = Math.floor(
-            Math.random() * EFF_SHORT_WORDLIST.length,
-        );
-        return [
-            EFF_SHORT_WORDLIST[randomIndex1],
-            EFF_SHORT_WORDLIST[randomIndex2],
-            EFF_SHORT_WORDLIST[randomIndex3],
-        ].join("-");
-    }
+  /**
+   * Generates a random, typeable clock ID.
+   */
+  function generateClockId() {
+    // Assuming EFF_SHORT_WORDLIST is available globally from eff_short_wordlist_1.js
+    var randomIndex1 = Math.floor(Math.random() * EFF_SHORT_WORDLIST.length);
+    var randomIndex2 = Math.floor(Math.random() * EFF_SHORT_WORDLIST.length);
+    var randomIndex3 = Math.floor(Math.random() * EFF_SHORT_WORDLIST.length);
+    return [
+      EFF_SHORT_WORDLIST[randomIndex1],
+      EFF_SHORT_WORDLIST[randomIndex2],
+      EFF_SHORT_WORDLIST[randomIndex3],
+    ].join("-");
+  }
 
-    /**
-     * Fetches the current message for a given clock ID.
-     * @param {string} clockId - The ID of the clock.
-     * @returns {Promise<Object|null>} A promise that resolves with the message data or null if not found.
-     */
-    async function fetchCurrentMessage(clockId) {
-        if (!clockId) return null;
-        try {
-            const response = await fetch(
-                `${API_ENDPOINT}?clock_id=${clockId}`,
-            );
-            if (response.status === 404) {
-                return null; // No message set yet
+  /**
+   * Fetches the current message for a given clock ID using XMLHttpRequest for Safari 9 compatibility.
+   * @param {string} clockId - The ID of the clock.
+   * @returns {Promise<Object|null>} A promise that resolves with the message data or null if not found.
+   */
+  function fetchCurrentMessage(clockId) {
+    return new Promise(function (resolve) {
+      if (!clockId) {
+        resolve(null);
+        return;
+      }
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", API_ENDPOINT + "?clock_id=" + clockId, true);
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 404) {
+            resolve(null); // No message set yet
+          } else if (xhr.status === 200) {
+            try {
+              var data = JSON.parse(xhr.responseText);
+              resolve(data);
+            } catch (error) {
+              console.error("Error parsing response:", error);
+              resolve(null);
             }
-            if (!response.ok) {
-                throw new Error(
-                    `Server responded with status: ${response.status}`,
-                );
-            }
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Error fetching current message:", error);
-            return null;
+          } else {
+            console.error("Server responded with status: " + xhr.status);
+            resolve(null);
+          }
         }
-    }
+      };
 
-    /**
-     * Generates a unique clock ID by checking for collisions with existing IDs.
-     * Retries until a free ID is found.
-     * @returns {Promise<string>} A promise that resolves with a unique clock ID.
-     */
-    async function generateUniqueClockId() {
-        let isUnique = false;
-        let clockId;
+      xhr.onerror = function () {
+        console.error("Error fetching current message");
+        resolve(null);
+      };
 
-        do {
-            clockId = generateClockId();
-            const response = await fetchCurrentMessage(clockId);
-            // An ID is considered unique/available if there's no data or no message associated with it.
-            if (!response || !response.message) {
-                isUnique = true;
-            } else {
-                console.warn(
-                    "Generated ID '" +
-                        clockId +
-                        "' is already in use. Trying a new one.",
-                );
-            }
-        } while (!isUnique);
+      xhr.send();
+    });
+  }
 
-        return clockId;
-    }
+  /**
+   * Generates a unique clock ID by checking for collisions with existing IDs.
+   * Retries until a free ID is found.
+   * @returns {Promise<string>} A promise that resolves with a unique clock ID.
+   */
+  function generateUniqueClockId() {
+    return new Promise(function (resolve) {
+      function attemptGeneration() {
+        var clockId = generateClockId();
+        fetchCurrentMessage(clockId).then(function (response) {
+          // An ID is considered unique/available if there's no data or no message associated with it.
+          if (!response || !response.message) {
+            resolve(clockId);
+          } else {
+            console.warn(
+              "Generated ID '" +
+                clockId +
+                "' is already in use. Trying a new one.",
+            );
+            attemptGeneration();
+          }
+        });
+      }
+      attemptGeneration();
+    });
+  }
 
-    // Export functions to global scope
-    window.CaregiverTools = window.CaregiverTools || {};
-    window.CaregiverTools.generateClockId = generateClockId;
-    window.CaregiverTools.fetchCurrentMessage = fetchCurrentMessage;
-    window.CaregiverTools.generateUniqueClockId = generateUniqueClockId;
-    window.CaregiverTools.API_ENDPOINT = API_ENDPOINT;
+  // Export functions to global scope
+  window.CaregiverTools = window.CaregiverTools || {};
+  window.CaregiverTools.generateClockId = generateClockId;
+  window.CaregiverTools.fetchCurrentMessage = fetchCurrentMessage;
+  window.CaregiverTools.generateUniqueClockId = generateUniqueClockId;
+  window.CaregiverTools.API_ENDPOINT = API_ENDPOINT;
 })();
