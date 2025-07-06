@@ -6,8 +6,8 @@
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-        <title>Day Clock</title>
         <meta http-equiv="refresh" content="86400" />
+        <title>Day Clock</title>
         <style>
             html,
             body {
@@ -66,7 +66,7 @@
                 background-image: url("photo.jpg");
                 background-size: cover;
                 background-position: center;
-                /* display: none;  */ /* Always hide this section as photos are not supported */
+                display: none; /* Always hide this section as photos are not supported */
             }
 
             .theme-dark .section-top,
@@ -75,6 +75,7 @@
                 background-color: transparent;
             }
 
+            /* In dark mode, only the top section should be visible. */
             .theme-dark .section:not(:first-child) {
                 display: none;
             }
@@ -149,7 +150,7 @@
                     flex: 1;
                 }
 
-                /* Keeping the bottom section hidden in landscape as per your original CSS */
+                /* Keeping the bottom section hidden in landscape */
                 .section:last-child {
                     display: none;
                 }

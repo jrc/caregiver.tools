@@ -3,7 +3,7 @@
 // Allowed origins for CORS
 const ALLOWED_ORIGINS = [
   "https://caregiver-tools.pages.dev",
-  "http://localhost:8080"
+  "http://localhost:8000" // i.e. `python3 -m http.server`
 ];
 
 // Name of the KV Namespace binding
