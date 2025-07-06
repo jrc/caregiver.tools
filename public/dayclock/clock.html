@@ -19,7 +19,9 @@
 
             #container {
                 height: 100%;
+                display: -webkit-flex;
                 display: flex;
+                -webkit-flex-direction: column;
                 flex-direction: column;
             }
 
@@ -30,8 +32,11 @@
 
             .section {
                 width: 100%;
+                display: -webkit-flex;
                 display: flex;
+                -webkit-justify-content: center;
                 justify-content: center;
+                -webkit-align-items: center;
                 align-items: center;
                 text-align: center;
             }
@@ -130,20 +135,24 @@
             @media screen and (orientation: portrait) {
                 .section-top,
                 .section-bottom {
+                    -webkit-flex: 4;
                     flex: 4;
                 }
 
                 .section-middle {
+                    -webkit-flex: 1;
                     flex: 1;
                 }
             }
 
             @media screen and (orientation: landscape) {
                 .section-top {
+                    -webkit-flex: 4;
                     flex: 4;
                 }
 
                 .section-middle {
+                    -webkit-flex: 1;
                     flex: 1;
                 }
 
@@ -185,15 +194,16 @@
                 var MESSAGE_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 min
 
                 // --- DOM Elements ---
-                var dateElement = document.getElementById("date");
-                var weekdayElement = document.getElementById("weekday");
-                var timeElement = document.getElementById("time");
-                var partOfDayElement = document.getElementById("partofday");
-                var announcementElement =
-                    document.getElementById("announcement");
                 var containerElement = document.getElementById("container");
                 var middleSectionElement =
                     document.getElementById("section-middle-div");
+
+                var partOfDayElement = document.getElementById("partofday");
+                var weekdayElement = document.getElementById("weekday");
+                var timeElement = document.getElementById("time");
+                var dateElement = document.getElementById("date");
+                var announcementElement =
+                    document.getElementById("announcement");
 
                 /**
                  * Helper function to get a query parameter from the URL.
