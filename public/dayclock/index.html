@@ -12,8 +12,12 @@
 
             .clock-url {
                 font-family: monospace;
-                font-size: larger;
-                font-weight: bold;
+                font-size: small;
+                word-break: break-all;
+            }
+
+            .clock-url-typeable {
+                font-size: x-large;
             }
         </style>
     </head>
@@ -37,8 +41,8 @@
             </p>
             <p>
                 Dementia Day Clock has been tested on iPhone and iPad running
-                iOS 9 and later. To check the version of iOS or iPadOS on your
-                device, go to Settings > General > About and look for Version.
+                iOS 9 and later. To check the version of iOS on your device, go
+                to the Settings app > General > About and look for Version.
                 <a href="https://iosref.com/ios"
                     >All iPhone and iPad devices since 2011 can be upgraded to
                     iOS 9.</a
@@ -99,8 +103,23 @@
                         </ul>
                     </li>
                     <li>
-                        Open <b>Safari</b> and enter the URL<br />
-                        <span class="clock-url"></span>
+                        Go to the
+                        <b>Settings</b> app >
+                        <b>General > Accessibility > Guided Access</b>, and turn
+                        Guided Access <b>on</b>
+                        <a href="https://support.apple.com/en-us/111795"
+                            >to limit the device to a single app.</a
+                        >
+                        Tap <b>Passcode Settings</b> and enter a Guided Access
+                        Passcode.
+                    </li>
+                    <li>
+                        Go to the <b>Settings</b> app >
+                        <b>General > Auto-Lock</b>, then choose <b>Never</b>.
+                    </li>
+                    <li>
+                        Go to the <b>Safari</b> app and enter the web address<br />
+                        <span class="clock-url clock-url-typeable"></span>
                     </li>
                     <li>
                         Tap the <b>Share</b> button
@@ -108,18 +127,20 @@
                             src="ios-share-icon.png"
                             alt="iOS share icon"
                             style="height: 1em"
-                        />, then <b>Add to Home Screen</b>. This installs
-                        Dementia Day Clock as a web app.
+                        />, then <b>Add to Home Screen</b>, then <b>Add</b>.
+                        This installs Dementia Day Clock web app.
+                    </li>
+                    <li>Go to the <b>Day Clock</b> app.</li>
+                    <li>
+                        <b>Triple-click the Home button</b>, then tap
+                        <b>Start</b> to enter Guided Access (single app mode).
                     </li>
                     <li>
-                        Go to Settings > General > <b>Auto-Lock</b>, then choose
-                        <b>Never</b>.
-                    </li>
-                    <li>
-                        Go to Settings > General > Accessibility >
-                        <b>Guided Access</b>, and turn it <b>on</b>. This puts
-                        the device in single-app mode. You can optionally set a
-                        passcode to restrict the device to this mode.
+                        Position your Dementia Day Clock as desired. Make sure
+                        the device is plugged in and charging. As it can be
+                        confused for a normal phone or tablet, you may need to
+                        consider using tape or other means to keep the device in
+                        place.
                     </li>
                 </ol>
             </details>
@@ -143,8 +164,7 @@
                         </ul>
                     </li>
                     <li>
-                        Open Camera and scan the code below (or open Safari and
-                        type the URL):
+                        Open Camera and scan the code below:
                         <div id="qrcode-display"></div>
                         <span class="clock-url"></span>
                     </li>
@@ -158,14 +178,30 @@
                         Dementia Day Clock as a web app.
                     </li>
                     <li>
+                        Go to the
+                        <b>Settings</b> app >
+                        <b>General > Accessibility > Guided Access</b>, and turn
+                        Guided Access <b>on</b>
+                        <a href="https://support.apple.com/en-us/111795"
+                            >to limit the device to a single app.</a
+                        >
+                        Tap <b>Passcode Settings</b> and enter a Guided Access
+                        Passcode.
+                    </li>
+                    <li>
                         Go to Settings > General > <b>Auto-Lock</b>, then choose
                         <b>Never</b>.
                     </li>
                     <li>
-                        Go to Settings > General > Accessibility >
-                        <b>Guided Access</b>, and turn it <b>on</b>. This puts
-                        the device in single-app mode. You can optionally set a
-                        passcode to restrict the device to this mode.
+                        <b>Triple-click the Side or Home button</b>, then tap
+                        <b>Start</b> to enter Guided Access (single app mode).
+                    </li>
+                    <li>
+                        Position your Dementia Day Clock as desired. Make sure
+                        the device is plugged in and charging. As it can be
+                        confused for a normal phone or tablet, you may need to
+                        consider using tape or other means to keep the device in
+                        place.
                     </li>
                 </ol>
             </details>
@@ -192,7 +228,7 @@
                     // Construct the base URL for clock.html, assuming it's in the same directory.
                     var baseUrl = window.location.href.replace(
                         "dayclock/",
-                        "dayclock/clock",
+                        "dayclock/clock"
                     );
                     var fullClockUrl = baseUrl + "?id=" + clockId;
 
@@ -202,8 +238,12 @@
 
                     // Clear previous QR code and generate new one
                     qrcodeDisplay.innerHTML = "";
-                    new QRCode(qrcodeDisplay, { text: fullClockUrl });
-                },
+                    new QRCode(qrcodeDisplay, {
+                        text: fullClockUrl,
+                        height: 160,
+                        width: 160
+                    });
+                }
             );
         })();
     </script>

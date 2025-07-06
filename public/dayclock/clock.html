@@ -6,6 +6,7 @@
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
         <title>Day Clock</title>
+        <meta http-equiv="refresh" content="86400" />
         <style>
             html,
             body {
@@ -182,7 +183,8 @@
                 // --- Configuration ---
                 var API_ENDPOINT =
                     "https://caregiver-tools-dayclock.jrcplus.workers.dev";
-                var MESSAGE_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 min
+                var DAY_MESSAGE_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 min
+                var NIGHT_MESSAGE_REFRESH_INTERVAL = 4 * 60 * 60 * 1000; // 4 hour
 
                 // --- DOM Elements ---
                 var containerElement = document.getElementById("container");
@@ -364,17 +366,34 @@
                     });
                 }
 
+                /**
+                 * Schedules the next message refresh based on the current part of the day.
+                 */
+                function scheduleNextMessageRefresh() {
+                    var currentInterval;
+
+                    // Determine interval based on the current theme, which reflects part of day.
+                    // If 'theme-dark' is active, it's considered night (bedtime).
+                    if (document.body.classList.contains("theme-dark")) {
+                        currentInterval = NIGHT_MESSAGE_REFRESH_INTERVAL;
+                    } else {
+                        currentInterval = DAY_MESSAGE_REFRESH_INTERVAL;
+                    }
+
+                    setTimeout(function () {
+                        fetchClockDataAndUpdateUI();
+                        scheduleNextMessageRefresh();
+                    }, currentInterval);
+                }
+
                 // --- Initial Setup ---
                 // Always update time
                 updateTime();
-                scheduleNextUpdateTime();
+                scheduleNextUpdateTime(); // Schedule minute-by-minute clock updates
 
-                // Initial fetch and periodic refresh for data
+                // Initial fetch and dynamic periodic refresh for message data
                 fetchClockDataAndUpdateUI();
-                setInterval(
-                    fetchClockDataAndUpdateUI,
-                    MESSAGE_REFRESH_INTERVAL
-                );
+                scheduleNextMessageRefresh(); // Schedule the first message refresh
             })();
         </script>
     </body>
