@@ -211,37 +211,6 @@
                 }
 
                 /**
-                 * Generates a random clock ID that's human-friendly
-                 */
-                function generateClockId() {
-                    var randomIndex1 = Math.floor(
-                        Math.random() * EFF_SHORT_WORDLIST.length,
-                    );
-                    var randomIndex2 = Math.floor(
-                        Math.random() * EFF_SHORT_WORDLIST.length,
-                    );
-                    var randomIndex3 = Math.floor(
-                        Math.random() * EFF_SHORT_WORDLIST.length,
-                    );
-                    return [
-                        EFF_SHORT_WORDLIST[randomIndex1],
-                        EFF_SHORT_WORDLIST[randomIndex2],
-                        EFF_SHORT_WORDLIST[randomIndex3],
-                    ].join("-");
-                }
-
-                /**
-                 * Updates the URL with a new clock ID without reloading the page
-                 */
-                function updateURL(clockId) {
-                    var url = new URL(window.location);
-                    url.searchParams.set("id", clockId);
-                    if (window.history && window.history.pushState) {
-                        window.history.pushState({}, "", url.toString());
-                    }
-                }
-
-                /**
                  * Fetches the announcement message from the Worker API.
                  * @param {string} id - The clock ID.
                  * @returns {Promise<Object|null>} A promise that resolves with the message data
@@ -304,30 +273,6 @@
                 }
 
                 var clockId = getQueryParam("id");
-
-                // If no clock ID is provided in the URL, generate a new one and
-                // ensure it's not already in use by checking the API.
-                if (!clockId) {
-                    let isUnique = false;
-                    do {
-                        clockId = generateClockId();
-                        // Attempt to fetch data for the newly generated ID
-                        const response = await fetchClockData(clockId);
-                        // An ID is considered unique/available if there's no data or no message associated with it.
-                        if (!response || !response.message) {
-                            isUnique = true;
-                        } else {
-                            console.warn(
-                                "Generated ID '" +
-                                    clockId +
-                                    "' is already in use. Trying a new one.",
-                            );
-                        }
-                    } while (!isUnique);
-
-                    // Update the URL with the newly generated (and hopefully unique) clock ID
-                    updateURL(clockId);
-                }
 
                 /**
                  * Updates the time, date, and part of day on the screen.
@@ -403,21 +348,21 @@
                 /**
                  * Fetches and displays the announcement message, hiding the section if empty or not found.
                  */
-                async function fetchClockDataAndUpdateUI() {
-                    var responseData = await fetchClockData(clockId);
-
-                    if (responseData && responseData.message) {
-                        announcementElement.textContent = responseData.message;
-                        if (middleSectionElement) {
-                            middleSectionElement.style.display = ""; // Show it
+                function fetchClockDataAndUpdateUI() {
+                    fetchClockData(clockId).then(function (responseData) {
+                        if (responseData && responseData.message) {
+                            announcementElement.textContent =
+                                responseData.message;
+                            if (middleSectionElement) {
+                                middleSectionElement.style.display = ""; // Show it
+                            }
+                        } else {
+                            announcementElement.textContent = ""; // Clear message
+                            if (middleSectionElement) {
+                                middleSectionElement.style.display = "none";
+                            }
                         }
-                    } else {
-                        announcementElement.textContent = ""; // Clear message
-                        // Hide the middle section if no message or an error occurred
-                        if (middleSectionElement) {
-                            middleSectionElement.style.display = "none";
-                        }
-                    }
+                    });
                 }
 
                 // --- Initial Setup ---

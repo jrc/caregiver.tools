@@ -12,6 +12,8 @@
 
             .clock-url {
                 font-family: monospace;
+                font-size: larger;
+                font-weight: bold;
             }
         </style>
     </head>
@@ -20,11 +22,12 @@
         <main>
             <h1>Dementia Day Clock</h1>
             <p>
-                Dementia Day Clock is a free web app that clearly shows the day,
-                time, and date in a way that’s easy to understand. It’s also
-                designed to be work on older phones and tablets, giving new life
-                to unused devices. Caregivers can remotely set a custom text
-                message to be displayed on the clock.
+                Dementia Day Clock is a free web app that shows the day, time,
+                and date in a way that’s easy to understand for people with
+                cognitive disabilities. It’s also specifically designed to work
+                on older phones and tablets, giving new life to unused devices.
+                Caregivers can remotely set a custom text message to be
+                displayed on the clock.
             </p>
 
             <h2>Requirements</h2>
@@ -35,8 +38,7 @@
             <p>
                 Dementia Day Clock has been tested on iPhone and iPad running
                 iOS 9 and later. To check the version of iOS or iPadOS on your
-                device, go to Settings > General > <b>About</b> and look at the
-                <b>Version</b>.
+                device, go to Settings > General > About and look for Version.
                 <a href="https://iosref.com/ios"
                     >All iPhone and iPad devices since 2011 can be upgraded to
                     iOS 9.</a
@@ -49,11 +51,7 @@
             </p>
 
             <h2>Installation</h2>
-            <p>
-                Follow the instructions below on the unused phone or tablet that
-                will serve as the dedicated Dementia Day Clock.
-            </p>
-            <details open>
+            <details>
                 <summary><b>Instructions for iOS 9</b></summary>
                 <ol>
                     <li>
@@ -101,8 +99,8 @@
                         </ul>
                     </li>
                     <li>
-                        Open <b>Safari</b> and type in the URL below.
-                        <span id="clock-url" class="clock-url"></span>
+                        Open <b>Safari</b> and enter the URL<br />
+                        <span class="clock-url"></span>
                     </li>
                     <li>
                         Tap the <b>Share</b> button
@@ -120,12 +118,12 @@
                     <li>
                         Go to Settings > General > Accessibility >
                         <b>Guided Access</b>, and turn it <b>on</b>. This puts
-                        the device in single-app mode. If desired, you can also
-                        set a passcode here.
+                        the device in single-app mode. You can optionally set a
+                        passcode to restrict the device to this mode.
                     </li>
                 </ol>
             </details>
-            <details open>
+            <details>
                 <summary><b>Instructions for iOS 12</b></summary>
                 <ol>
                     <li>
@@ -146,9 +144,9 @@
                     </li>
                     <li>
                         Open Camera and scan the code below (or open Safari and
-                        type in the URL):
+                        type the URL):
                         <div id="qrcode-display"></div>
-                        <span id="clock-url" class="clock-url"></span>
+                        <span class="clock-url"></span>
                     </li>
                     <li>
                         Tap the <b>Share</b> button
@@ -166,8 +164,8 @@
                     <li>
                         Go to Settings > General > Accessibility >
                         <b>Guided Access</b>, and turn it <b>on</b>. This puts
-                        the device in single-app mode. If desired, you can also
-                        set a passcode here.
+                        the device in single-app mode. You can optionally set a
+                        passcode to restrict the device to this mode.
                     </li>
                 </ol>
             </details>
@@ -183,7 +181,7 @@
 
             // --- DOM Elements ---
             const qrcodeDisplay = document.getElementById("qrcode-display");
-            const clockUrlInput = document.getElementById("clock-url");
+            const clockUrlElements = document.querySelectorAll(".clock-url");
 
             // --- Initial Page Load ---
 
@@ -192,26 +190,15 @@
 
             // Populate URLs
             // Construct the base URL for clock.html, assuming it's in the same directory.
-            const baseUrl =
-                window.location.origin +
-                window.location.pathname.substring(
-                    0,
-                    window.location.pathname.lastIndexOf("/") + 1,
-                ) +
-                "clock.html";
+            const baseUrl = window.location.href.replace("/index", "/clock");
             const fullClockUrl = `${baseUrl}?id=${clockId}`;
-            clockUrlInput.textContent = fullClockUrl;
+            clockUrlElements.forEach((element) => {
+                element.textContent = fullClockUrl;
+            });
 
             // Clear previous QR code and generate new one
             qrcodeDisplay.innerHTML = "";
-            new QRCode(qrcodeDisplay, {
-                text: fullClockUrl,
-                width: 128,
-                height: 128,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H,
-            });
+            new QRCode(qrcodeDisplay, { text: fullClockUrl });
         })();
     </script>
 </html>
