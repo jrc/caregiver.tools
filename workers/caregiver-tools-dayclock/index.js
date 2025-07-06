@@ -1,7 +1,10 @@
 // Cloudflare Worker for Dementia Day Clock API
 
-// Allowed origin for CORS
-const ALLOWED_ORIGIN = "https://caregiver-tools.pages.dev";
+// Allowed origins for CORS
+const ALLOWED_ORIGINS = [
+  "https://caregiver-tools.pages.dev",
+  "http://localhost:8080"
+];
 
 // Name of the KV Namespace binding
 // This must match the binding you set up in the Worker's settings.
@@ -12,6 +15,8 @@ addEventListener("fetch", (event) => {
 });
 
 async function handleRequest(request) {
+  const origin = request.headers.get("Origin");
+
   // Handle CORS preflight requests
   if (request.method === "OPTIONS") {
     return handleOptions(request);
@@ -25,7 +30,7 @@ async function handleRequest(request) {
   } else {
     return new Response("Method not allowed", {
       status: 405,
-      headers: corsHeaders(),
+      headers: corsHeaders(origin)
     });
   }
 }
@@ -41,7 +46,7 @@ async function handleGet(request) {
   if (!clockId) {
     return new Response("Missing clock_id query parameter", {
       status: 400,
-      headers: corsHeaders(),
+      headers: corsHeaders(request.headers.get("Origin"))
     });
   }
 
@@ -50,16 +55,16 @@ async function handleGet(request) {
   if (data === null) {
     return new Response("Message not found for this clock_id", {
       status: 404,
-      headers: corsHeaders(),
+      headers: corsHeaders(request.headers.get("Origin"))
     });
   }
 
   return new Response(JSON.stringify(data), {
     status: 200,
     headers: {
-      ...corsHeaders(),
-      "Content-Type": "application/json",
-    },
+      ...corsHeaders(request.headers.get("Origin")),
+      "Content-Type": "application/json"
+    }
   });
 }
 
@@ -77,8 +82,8 @@ async function handlePost(request) {
         'Request body must include "clock_id" and "message"',
         {
           status: 400,
-          headers: corsHeaders(),
-        },
+          headers: corsHeaders(request.headers.get("Origin"))
+        }
       );
     }
 
@@ -86,7 +91,7 @@ async function handlePost(request) {
     const dataToStore = {
       message: message,
       imageUrl: imageUrl || null, // Allow for future use
-      lastUpdated: new Date().toISOString(),
+      lastUpdated: new Date().toISOString()
     };
 
     // The clock_id is the key in the KV store
@@ -97,20 +102,20 @@ async function handlePost(request) {
       status: "success",
       clock_id: clock_id,
       message: dataToStore.message,
-      imageUrl: dataToStore.imageUrl,
+      imageUrl: dataToStore.imageUrl
     };
 
     return new Response(JSON.stringify(responsePayload), {
       status: 200,
       headers: {
-        ...corsHeaders(),
-        "Content-Type": "application/json",
-      },
+        ...corsHeaders(request.headers.get("Origin")),
+        "Content-Type": "application/json"
+      }
     });
   } catch (error) {
     return new Response("Invalid JSON in request body", {
       status: 400,
-      headers: corsHeaders(),
+      headers: corsHeaders(request.headers.get("Origin"))
     });
   }
 }
@@ -127,14 +132,14 @@ function handleOptions(request) {
   ) {
     // Handle CORS preflight requests.
     return new Response(null, {
-      headers: corsHeaders(),
+      headers: corsHeaders(headers.get("Origin"))
     });
   } else {
     // Handle standard OPTIONS request.
     return new Response(null, {
       headers: {
-        Allow: "GET, POST, OPTIONS",
-      },
+        Allow: "GET, POST, OPTIONS"
+      }
     });
   }
 }
@@ -142,10 +147,15 @@ function handleOptions(request) {
 /**
  * Returns a base set of CORS headers.
  */
-function corsHeaders() {
+function corsHeaders(origin = null) {
+  // Check if the origin is in our allowed list
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin)
+    ? origin
+    : ALLOWED_ORIGINS[0];
+
   return {
-    "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+    "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type"
   };
 }

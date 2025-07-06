@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
         <title>Day Clock</title>
@@ -220,9 +221,10 @@
                  *   (e.g., { message: "...", imageUrl: "..." }) or null if not found or an error occurs.
                  */
                 function fetchClockData(id) {
+                    console.debug("fetchClockData: Fetching for ID:", id);
                     return new Promise(function (resolve) {
                         if (!id) {
-                            console.warn("fetchClockData: No clock ID");
+                            console.warn("fetchClockData: No ID");
                             resolve(null);
                             return;
                         }
@@ -238,24 +240,32 @@
                                         var response = JSON.parse(
                                             xhr.responseText
                                         );
+                                        console.debug(
+                                            "fetchClockData: Data fetched:",
+                                            response
+                                        );
                                         resolve(response);
                                     } catch (e) {
                                         console.error(
-                                            "Error parsing response:",
-                                            e
+                                            "fetchClockData: Parse error:",
+                                            e,
+                                            "Text:",
+                                            xhr.responseText
                                         );
                                         resolve(null);
                                     }
                                 } else if (xhr.status === 404) {
-                                    console.log(
-                                        "Data not found for clock_id:",
+                                    console.debug(
+                                        "fetchClockData: 404 for ID:",
                                         id
                                     );
                                     resolve(null); // Explicitly resolve with null for 404
                                 } else {
                                     console.error(
-                                        "Error fetching data. Status:",
-                                        xhr.status
+                                        "fetchClockData: Fetch error. Status:",
+                                        xhr.status,
+                                        "Text:",
+                                        xhr.responseText
                                     );
                                     resolve(null);
                                 }
@@ -263,9 +273,7 @@
                         };
 
                         xhr.onerror = function () {
-                            console.error(
-                                "A network error occurred while fetching data."
-                            );
+                            console.error("fetchClockData: Network error.");
                             resolve(null);
                         };
 
@@ -350,17 +358,26 @@
                  * Fetches and displays the announcement message, hiding the section if empty or not found.
                  */
                 function fetchClockDataAndUpdateUI() {
+                    console.debug(
+                        "fetchClockDataAndUpdateUI: Update UI start."
+                    );
                     fetchClockData(clockId).then(function (responseData) {
                         if (responseData && responseData.message) {
                             announcementElement.textContent =
                                 responseData.message;
                             if (middleSectionElement) {
                                 middleSectionElement.style.display = ""; // Show it
+                                console.debug(
+                                    "fetchClockDataAndUpdateUI: Msg found, UI shown."
+                                );
                             }
                         } else {
                             announcementElement.textContent = ""; // Clear message
                             if (middleSectionElement) {
                                 middleSectionElement.style.display = "none";
+                                console.debug(
+                                    "fetchClockDataAndUpdateUI: No msg, UI hidden."
+                                );
                             }
                         }
                     });
@@ -370,6 +387,9 @@
                  * Schedules the next message refresh based on the current part of the day.
                  */
                 function scheduleNextMessageRefresh() {
+                    console.debug(
+                        "scheduleNextMessageRefresh: Calc next interval."
+                    );
                     var currentInterval;
 
                     // Determine interval based on the current theme, which reflects part of day.
@@ -379,10 +399,18 @@
                     } else {
                         currentInterval = DAY_MESSAGE_REFRESH_INTERVAL;
                     }
+                    console.debug(
+                        "scheduleNextMessageRefresh: Next refresh in",
+                        currentInterval / 1000,
+                        "s."
+                    );
 
                     setTimeout(function () {
+                        console.debug(
+                            "scheduleNextMessageRefresh: Interval triggered. Fetching/Rescheduling."
+                        );
                         fetchClockDataAndUpdateUI();
-                        scheduleNextMessageRefresh();
+                        scheduleNextMessageRefresh(); // Schedule the next one
                     }, currentInterval);
                 }
 
@@ -392,7 +420,9 @@
                 scheduleNextUpdateTime(); // Schedule minute-by-minute clock updates
 
                 // Initial fetch and dynamic periodic refresh for message data
+                console.debug("Init: First msg fetch.");
                 fetchClockDataAndUpdateUI();
+                console.debug("Init: Scheduling first msg refresh.");
                 scheduleNextMessageRefresh(); // Schedule the first message refresh
             })();
         </script>

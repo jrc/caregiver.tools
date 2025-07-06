@@ -48,75 +48,52 @@ This project delivers a static-page-based **Dementia Day Clock** featuring a cus
 
 ## 2. Current Architecture
 
-The current architecture uses Cloudflare Workers KV as a minimal centralized key-value store, accessed via a Cloudflare Worker, with static HTML/CSS/JavaScript for the frontend.
+The Dementia Day Clock uses a serverless setup based on Cloudflare.
+- The frontend is static HTML/CSS/JavaScript, handwritten, using no frameworks, hosted on Cloudflare Pages. There are two parts:
+  - `clock.html` which is the viewer app, specifically designed to work on old browsers
+  - `admin.html` which is the admin app, for caregivers to manage the clock's custom message
+- A Cloudflare Workers KV Store is used to store customizable messages.
+- A Cloudflare Worker implements a tiny REST API backend. This worker handles `GET` requests for retrieving messages by a `clock_id` and `POST` requests for updating messages, using the `clock_id` as a write credential and restricting access via CORS.
 
-### 2.1. Overall Diagram
+---
 
-```mermaid
-graph LR
-    subgraph Frontend (Static Pages on dementia.tools)
-        A[Admin Browser (Modern JS)] -- 1. POST /message (clock_id, Message) --> B(Cloudflare Worker)
-        C[Dementia Clock Browser (Safari 9 JS)] -- 2. GET /message?clock_id= --> B
-    end
+## 3. Cloudflare Setup
 
-    subgraph Backend (Cloudflare Edge Network)
-        B -- 3. put(clock_id, JSON object) --> D[Cloudflare Workers KV]
-        D -- 4. get(clock_id) --> B
-    end
+This section outlines the steps to deploy the Dementia Day Clock application on Cloudflare.
 
-    B -- 5. Response --> A
-    B -- 6. Response --> C
-```
+#### 3.1. Cloudflare Workers KV (Key-Value Store)
+1.  Log in to your [Cloudflare Dashboard](https://dash.cloudflare.com/).
+2.  Navigate to **Workers & Pages** > **KV**.
+3.  Click **Create a namespace** and give it a descriptive name, for example, `DAYCLOCK_MESSAGES_KV`. This namespace will store your clock messages.
 
-### 2.2. Component Breakdown
+#### 3.2. Cloudflare Worker (API Backend)
+1.  Navigate to **Workers & Pages** > **Overview**.
+2.  Click **Create application** > **Create Worker**.
+3.  Give your Worker a name, for example, `caregiver-tools-dayclock`.
+4.  **Configure KV Binding:**
+    *   Once your Worker is created, go to its settings.
+    *   Navigate to **Settings** > **Variables** > **KV Namespace Bindings**.
+    *   Click **Add binding**.
+    *   For **Variable name**, enter `MESSAGES_KV`. (This name must match how your Worker code accesses the KV store.)
+    *   For **KV namespace**, select the `DAYCLOCK_MESSAGES_KV` namespace you created in the previous step.
+5.  **Deploy Worker Code:**
+    *   You will need to deploy your Cloudflare Worker code (which handles the API endpoints for reading and writing messages) to this Worker. Typically, this is done using the `wrangler` CLI tool or by pasting the code directly into the Cloudflare dashboard editor.
+    *   Ensure your Worker code implements the `GET /?clock_id=<CLOCK_ID>` and `POST /` (for message updates) endpoints as described in the "API Endpoints" section of this README.
+    *   Verify that CORS is configured to allow requests from your frontend domain (e.g., `https://dementia.tools`).
 
-#### 2.2.1. The Minimal Backend: Cloudflare Worker + Workers KV
+#### 3.3. Cloudflare Pages (Frontend Hosting)
+1.  Navigate to **Workers & Pages** > **Pages**.
+2.  Click **Create application** > **Direct Upload** (or connect to your Git repository if you prefer automated deployments).
+3.  **For Direct Upload:**
+    *   Drag and drop the contents of your `public/dayclock` directory (which contains `clock.html`, `admin.html`, and associated assets) into the upload area.
+    *   Ensure the `clock.html` is accessible at a path like `https://dementia.tools/dayclock/clock` (this may require configuring a custom domain for your Pages project and setting up appropriate redirects or subdirectories).
+4.  **Build Settings (if using Git):**
+    *   **Build command:** `(empty)` or `npm run build` if you have a build step.
+    *   **Build output directory:** Set this to `public`.
+5.  Configure any custom domains or subdomains as needed (e.g., `dementia.tools`).
 
-  * **Technology:** Cloudflare Worker (JavaScript runtime at the edge) and Cloudflare Workers KV (globally distributed key-value store).
-  * **Purpose:** Provides a simple API for message data, centralized storage, and `clock_id`-based write access control.
-  * **Data Structure in KV:** Stores a JSON object like `{ "message": "Your text message here", "imageUrl": null }`, enabling future image support.
-  * **API Endpoints:** The Cloudflare Worker's URL serves as the single API endpoint.
-      * **Read (GET):** `GET /?clock_id=<CLOCK_ID>` retrieves the message object from KV. No explicit authentication is needed; access relies on `clock_id` obscurity. Response: `{ "message": "...", "imageUrl": null }`.
-      * **Write (POST):** `POST /` with a JSON body `{ "clock_id": "...", "message": "...", "imageUrl": "..." }` updates the message object in KV. The `clock_id` itself serves as the write credential. Response: `{ "status": "success", "clock_id": "...", "message": "...", "imageUrl": "..." }` or an error.
-  * **Domain Restriction (CORS):** Configured via `Access-Control-Allow-Origin: https://dementia.tools` to restrict browser-based requests to the intended origin.
+---
 
-#### 2.2.2. The Frontend: Static HTML/CSS/JavaScript
+## Debugging
 
-  * **Hosting:** Static files deployed on `dementia.tools` (e.g., Cloudflare Pages).
-
-      * **A. Dementia Day Clock (`dementia.tools/dayclock/clock`)**
-
-          * **Compatibility:** Strictly **Safari 9 compatible**, using ES5 JavaScript and `XMLHttpRequest`.
-          * **Purpose:** Displays time, date, and the changeable text message.
-          * **Loading:** Loaded via `https://dementia.tools/dayclock/clock?clock_id=<CLOCK_ID>`.
-          * **Logic:** Parses `clock_id` from the URL, updates time/date, and periodically fetches the message object from the Worker via `GET` `XMLHttpRequest`. It extracts and displays the `message` field. This app **does not use `localStorage` for caching or state persistence** due to Safari 9's unreliability in certain modes.
-
-      * **B. Admin Interface (`dementia.tools/dayclock/admin`)**
-
-          * **Compatibility:** Leverages **modern JavaScript** (`fetch`, ES6+, `async/await`).
-          * **Purpose:** Generates new `clock_id`s and manages clock messages.
-          * **Loading:** Accessible at `https://dementia.tools/dayclock/admin`, with optional `clock_id` pre-population from URL query parameters.
-          * **Logic:** Provides a **`clock_id` generation button** that creates a **typeable phrase** (e.g., 2-3 random dictionary words). For initial setup, it guides the admin to generate and save a new `clock_id`, displaying corresponding Clock and Admin URLs. Admin enters or fetches the message, then saves it via `POST` `fetch` request to the Worker, sending the `clock_id` and message object. Provides clear status feedback.
-
-### 2.3. Key Flows
-
-#### 2.3.1. New Clock Setup
-
-1.  Admin navigates their modern browser to `https://dementia.tools/dayclock/admin`.
-2.  Admin clicks "**Generate New Clock ID**". The interface will produce a typeable, random phrase.
-3.  The admin interface displays two URLs:
-      * **Clock URL:** `https://dementia.tools/dayclock/clock?clock_id=<GENERATED_CLOCK_ID_PHRASE>`
-      * **Admin URL:** `https://dementia.tools/dayclock/admin?clock_id=<GENERATED_CLOCK_ID_PHRASE>`
-4.  **Critical:** The admin **must securely save** the Admin URL (or just the `clock_id` phrase itself) for future remote administration. This `clock_id` phrase is the "secret" credential for write access.
-5.  Admin navigates the patient's Safari 9-compatible clock device to the Clock URL.
-6.  The clock begins displaying.
-
-#### 2.3.2. Changing a Message
-
-1.  Admin accesses the specific **Admin URL** for the target clock in their modern browser.
-2.  The interface loads, pre-populating the `clock_id` and current message.
-3.  Admin enters the new message.
-4.  Admin clicks "**Save Message**".
-5.  The admin interface sends a `POST` `fetch` request to the Cloudflare Worker with the `clock_id` and new message object.
-6.  The Worker updates the message in Workers KV.
-7.  Within minutes, the clock display updates with the new message.
+    python3 -m http.server 8080
