@@ -35,6 +35,8 @@ This project delivers a static-page-based **Dementia Day Clock** featuring a cus
     * Use XMLHttpRequest() instead of fetch()
     https://caniuse.com/?search=fetch
 
+    * **Prettier `trailingComma: "none"`:** The `.prettierrc.json` configuration is set to `\"trailingComma\": \"none\"` to avoid trailing commas in JavaScript, as Safari 9's JavaScript engine can interpret them as syntax errors in some contexts, especially for function calls or array/object literals.
+
 /* Safari 9's Date constructor doesn't reliably parse ISO 8601 date strings
    without time/timezone info, often treating them as UTC midnight,
    leading to potential timezone issues. */
