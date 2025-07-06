@@ -19,9 +19,7 @@
 
             #container {
                 height: 100%;
-                display: -webkit-flex;
                 display: flex;
-                -webkit-flex-direction: column;
                 flex-direction: column;
             }
 
@@ -32,11 +30,8 @@
 
             .section {
                 width: 100%;
-                display: -webkit-flex;
                 display: flex;
-                -webkit-justify-content: center;
                 justify-content: center;
-                -webkit-align-items: center;
                 align-items: center;
                 text-align: center;
             }
@@ -135,24 +130,20 @@
             @media screen and (orientation: portrait) {
                 .section-top,
                 .section-bottom {
-                    -webkit-flex: 4;
                     flex: 4;
                 }
 
                 .section-middle {
-                    -webkit-flex: 1;
                     flex: 1;
                 }
             }
 
             @media screen and (orientation: landscape) {
                 .section-top {
-                    -webkit-flex: 4;
                     flex: 4;
                 }
 
                 .section-middle {
-                    -webkit-flex: 1;
                     flex: 1;
                 }
 
@@ -229,9 +220,7 @@
                 function fetchClockData(id) {
                     return new Promise(function (resolve) {
                         if (!id) {
-                            console.error(
-                                "fetchClockData: No clock ID provided.",
-                            );
+                            console.warn("fetchClockData: No clock ID");
                             resolve(null);
                             return;
                         }
