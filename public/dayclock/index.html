@@ -4,9 +4,214 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Dementia Day Clock - Caregiver.tools</title>
+        <link rel="stylesheet" href="../style.css" />
+        <style>
+            #qrcode-display {
+                margin-top: 0.5rem;
+            }
+
+            .clock-url {
+                font-family: monospace;
+            }
+        </style>
     </head>
 
     <body>
-        <h1>Hello, world!</h1>
+        <main>
+            <h1>Dementia Day Clock</h1>
+            <p>
+                Dementia Day Clock is a free web app that clearly shows the day,
+                time, and date in a way that’s easy to understand. It’s also
+                designed to be work on older phones and tablets, giving new life
+                to unused devices. Caregivers can remotely set a custom text
+                message to be displayed on the clock.
+            </p>
+
+            <h2>Requirements</h2>
+            <p>
+                You need an unused phone or tablet to serve as the dedicated
+                Dementia Day Clock. You will be completely erasing that device.
+            </p>
+            <p>
+                Dementia Day Clock has been tested on iPhone and iPad running
+                iOS 9 and later. To check the version of iOS or iPadOS on your
+                device, go to Settings > General > <b>About</b> and look at the
+                <b>Version</b>.
+                <a href="https://iosref.com/ios"
+                    >All iPhone and iPad devices since 2011 can be upgraded to
+                    iOS 9.</a
+                >
+            </p>
+            <p>
+                Dementia Day Clock may work on Android and even older Apple
+                devices, but it has not been tested. Let me know if you have any
+                success.
+            </p>
+
+            <h2>Installation</h2>
+            <p>
+                Follow the instructions below on the unused phone or tablet that
+                will serve as the dedicated Dementia Day Clock.
+            </p>
+            <details open>
+                <summary><b>Instructions for iOS 9</b></summary>
+                <ol>
+                    <li>
+                        Go to <b>Settings > General > Reset</b>. Tap
+                        <b>Erase All Content and Settings</b>, then
+                        <b>Erase</b> to confirm.
+                    </li>
+                    <li>
+                        Set it up as a new device:
+                        <ul>
+                            <li>
+                                Choose your language, country, and Wi-Fi
+                                network.
+                            </li>
+                            <li>
+                                Location Services: Tap
+                                <b>Enable Location Services</b> (optional).
+                            </li>
+                            <li>
+                                Passcode: Tap
+                                <b>Passcode Options</b>, then
+                                <b>Don’t Add Passcode</b>, and <b>Continue</b>.
+                            </li>
+                            <li>
+                                Apps &amp; Data: Tap
+                                <b>Set up as New iPhone/iPad</b>.
+                            </li>
+                            <li>
+                                Apple ID: Tap
+                                <b>Don’t have an Apple ID or forgot it?</b>,
+                                then <b>Set Up Later in Settings</b>, then
+                                <b>Don’t Use</b>.
+                            </li>
+                            <li>Terms and Conditions: Tap <b>Agree</b>.</li>
+                            <li>Siri: Tap <b>Turn On Siri Later</b>.</li>
+                            <li>
+                                Diagnostics: Tap
+                                <b>Send to Apple</b> (optional).
+                            </li>
+                            <li>
+                                App Analytics: Tap
+                                <b>Share with App Developers</b> (optional).
+                            </li>
+                            <li>Finally, tap <b>Get Started</b>.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        Open <b>Safari</b> and type in the URL below.
+                        <span id="clock-url" class="clock-url"></span>
+                    </li>
+                    <li>
+                        Tap the <b>Share</b> button
+                        <img
+                            src="ios-share-icon.png"
+                            alt="iOS share icon"
+                            style="height: 1em"
+                        />, then <b>Add to Home Screen</b>. This installs
+                        Dementia Day Clock as a web app.
+                    </li>
+                    <li>
+                        Go to Settings > General > <b>Auto-Lock</b>, then choose
+                        <b>Never</b>.
+                    </li>
+                    <li>
+                        Go to Settings > General > Accessibility >
+                        <b>Guided Access</b>, and turn it <b>on</b>. This puts
+                        the device in single-app mode. If desired, you can also
+                        set a passcode here.
+                    </li>
+                </ol>
+            </details>
+            <details open>
+                <summary><b>Instructions for iOS 12</b></summary>
+                <ol>
+                    <li>
+                        Go to Settings > General >
+                        <b>Reset</b> (or <b>Transfer or Reset iPhone/iPad</b>).
+                        Tap <b>Erase All Content and Settings</b>, and
+                        <b>Erase</b> to confirm.
+                    </li>
+                    <li>
+                        Set up the iPhone or iPad as a new device:
+                        <ul>
+                            <li>
+                                Choose your language, country, and Wi-Fi
+                                network.
+                            </li>
+                            <li>???</li>
+                        </ul>
+                    </li>
+                    <li>
+                        Open Camera and scan the code below (or open Safari and
+                        type in the URL):
+                        <div id="qrcode-display"></div>
+                        <span id="clock-url" class="clock-url"></span>
+                    </li>
+                    <li>
+                        Tap the <b>Share</b> button
+                        <img
+                            src="ios-share-icon.png"
+                            alt="iOS share icon"
+                            style="height: 1em"
+                        />, then <b>Add to Home Screen</b>. This installs
+                        Dementia Day Clock as a web app.
+                    </li>
+                    <li>
+                        Go to Settings > General > <b>Auto-Lock</b>, then choose
+                        <b>Never</b>.
+                    </li>
+                    <li>
+                        Go to Settings > General > Accessibility >
+                        <b>Guided Access</b>, and turn it <b>on</b>. This puts
+                        the device in single-app mode. If desired, you can also
+                        set a passcode here.
+                    </li>
+                </ol>
+            </details>
+        </main>
     </body>
+
+    <script src="qrcode.min.js"></script>
+    <script src="eff_short_wordlist_1.js"></script>
+    <script src="script.js"></script>
+    <script>
+        (async function () {
+            "use strict";
+
+            // --- DOM Elements ---
+            const qrcodeDisplay = document.getElementById("qrcode-display");
+            const clockUrlInput = document.getElementById("clock-url");
+
+            // --- Initial Page Load ---
+
+            // Generate a unique clock ID by checking for collisions
+            const clockId = await window.CaregiverTools.generateUniqueClockId();
+
+            // Populate URLs
+            // Construct the base URL for clock.html, assuming it's in the same directory.
+            const baseUrl =
+                window.location.origin +
+                window.location.pathname.substring(
+                    0,
+                    window.location.pathname.lastIndexOf("/") + 1,
+                ) +
+                "clock.html";
+            const fullClockUrl = `${baseUrl}?id=${clockId}`;
+            clockUrlInput.textContent = fullClockUrl;
+
+            // Clear previous QR code and generate new one
+            qrcodeDisplay.innerHTML = "";
+            new QRCode(qrcodeDisplay, {
+                text: fullClockUrl,
+                width: 128,
+                height: 128,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H,
+            });
+        })();
+    </script>
 </html>

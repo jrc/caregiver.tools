@@ -176,7 +176,7 @@
         <script src="moment-2.30.1.min.js"></script>
         <script src="eff_short_wordlist_1.js"></script>
         <script>
-            (function () {
+            (async function () {
                 "use strict";
 
                 // --- Configuration ---
@@ -223,13 +223,11 @@
                     var randomIndex3 = Math.floor(
                         Math.random() * EFF_SHORT_WORDLIST.length,
                     );
-                    return (
-                        EFF_SHORT_WORDLIST[randomIndex1] +
-                        "-" +
-                        EFF_SHORT_WORDLIST[randomIndex2] +
-                        "-" +
-                        EFF_SHORT_WORDLIST[randomIndex3]
-                    );
+                    return [
+                        EFF_SHORT_WORDLIST[randomIndex1],
+                        EFF_SHORT_WORDLIST[randomIndex2],
+                        EFF_SHORT_WORDLIST[randomIndex3],
+                    ].join("-");
                 }
 
                 /**
@@ -307,9 +305,27 @@
 
                 var clockId = getQueryParam("id");
 
-                // If no clock ID is provided, generate one and update the URL
+                // If no clock ID is provided in the URL, generate a new one and
+                // ensure it's not already in use by checking the API.
                 if (!clockId) {
-                    clockId = generateClockId();
+                    let isUnique = false;
+                    do {
+                        clockId = generateClockId();
+                        // Attempt to fetch data for the newly generated ID
+                        const response = await fetchClockData(clockId);
+                        // An ID is considered unique/available if there's no data or no message associated with it.
+                        if (!response || !response.message) {
+                            isUnique = true;
+                        } else {
+                            console.warn(
+                                "Generated ID '" +
+                                    clockId +
+                                    "' is already in use. Trying a new one.",
+                            );
+                        }
+                    } while (!isUnique);
+
+                    // Update the URL with the newly generated (and hopefully unique) clock ID
                     updateURL(clockId);
                 }
 
