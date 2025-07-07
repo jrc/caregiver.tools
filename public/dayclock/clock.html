@@ -107,9 +107,8 @@
 
             /* 1. Part of Day */
             .partofday {
-                font-size: 7rem;
+                font-size: 8rem;
                 font-weight: 900;
-                text-transform: uppercase;
                 margin-bottom: 1rem;
             }
 
@@ -117,6 +116,7 @@
             .weekday {
                 font-size: 5.5rem;
                 font-weight: 600;
+                text-transform: uppercase;
             }
 
             /* 3. Current Time */
@@ -133,13 +133,13 @@
             }
 
             .announcement {
-                font-size: 2rem;
-                margin: 2rem;
+                font-size: 3.5rem;
+                margin: 1rem;
             }
 
             @media (max-width: 768px) {
                 .partofday {
-                    font-size: 5.5rem;
+                    font-size: 6.5rem;
                 }
                 .weekday {
                     font-size: 4.5rem;
@@ -151,14 +151,14 @@
                     font-size: 3rem;
                 }
                 .announcement {
-                    font-size: 2rem;
+                    font-size: 3rem;
                 }
             }
 
             @media screen and (orientation: portrait) {
                 .section-top,
                 .section-bottom {
-                    flex: 4;
+                    flex: 3;
                 }
 
                 .section-middle {
@@ -168,7 +168,7 @@
 
             @media screen and (orientation: landscape) {
                 .section-top {
-                    flex: 4;
+                    flex: 3;
                 }
 
                 .section-middle {
@@ -210,8 +210,7 @@
                 // --- Configuration ---
                 var API_ENDPOINT =
                     "https://caregiver-tools-dayclock.jrcplus.workers.dev";
-                var DAY_MESSAGE_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 min
-                var NIGHT_MESSAGE_REFRESH_INTERVAL = 4 * 60 * 60 * 1000; // 4 hour
+                var FETCH_DATA_INTERVAL = 15 * 60 * 1000; // 15 min
 
                 // --- DOM Elements ---
                 var containerElement = document.getElementById("container");
@@ -257,14 +256,16 @@
 
                     var deltaDays = targetDate.diff(today, "days");
 
-                    if (deltaDays < 0) {
-                        return Math.abs(deltaDays) + " days ago";
-                    } else if (deltaDays === 0) {
-                        return "today";
+                    if (deltaDays > 1) {
+                        return "in " + deltaDays + " days";
                     } else if (deltaDays === 1) {
                         return "tomorrow";
-                    } else {
-                        return "in " + deltaDays + " days";
+                    } else if (deltaDays === 0) {
+                        return "today";
+                    } else if (deltaDays === -1) {
+                        return "yesterday";
+                    } else if (deltaDays < 0) {
+                        return Math.abs(deltaDays) + " days ago";
                     }
                 }
 
@@ -442,6 +443,8 @@
                         if (responseData && responseData.message) {
                             var rawMessage = responseData.message;
                             var processedMessage = processMessage(rawMessage);
+                            // processedMessage =
+                            //     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in volup";
                             announcementElement.textContent = processedMessage;
 
                             if (middleSectionElement) {
@@ -471,16 +474,9 @@
                     );
                     var currentInterval;
 
-                    // Determine interval based on the current theme, which reflects part of day.
-                    // If 'theme-dark' is active, it's considered night (bedtime).
-                    if (document.body.classList.contains("theme-dark")) {
-                        currentInterval = NIGHT_MESSAGE_REFRESH_INTERVAL;
-                    } else {
-                        currentInterval = DAY_MESSAGE_REFRESH_INTERVAL;
-                    }
                     console.debug(
-                        "scheduleNextMessageRefresh: Next refresh in",
-                        currentInterval / 1000,
+                        "scheduleNextMessageRefresh: Next fetch in",
+                        FETCH_DATA_INTERVAL / 1000,
                         "s."
                     );
 
@@ -490,7 +486,7 @@
                         );
                         fetchClockDataAndUpdateUI();
                         scheduleNextMessageRefresh(); // Schedule the next one
-                    }, currentInterval);
+                    }, FETCH_DATA_INTERVAL);
                 }
 
                 // --- Initial Setup ---

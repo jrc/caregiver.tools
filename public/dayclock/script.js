@@ -27,7 +27,7 @@
   /**
    * Generates a random, typeable clock ID.
    */
-  function generateClockId() {
+  function _generateClockId() {
     // Assuming EFF_SHORT_WORDLIST is available globally from eff_short_wordlist_1.js
     var randomIndex1 = Math.floor(Math.random() * EFF_SHORT_WORDLIST.length);
     var randomIndex2 = Math.floor(Math.random() * EFF_SHORT_WORDLIST.length);
@@ -90,7 +90,7 @@
   function generateUniqueClockId() {
     return new Promise(function (resolve) {
       function attemptGeneration() {
-        var clockId = generateClockId();
+        var clockId = _generateClockId();
         fetchCurrentMessage(clockId).then(function (response) {
           // An ID is considered unique/available if there's no data or no message associated with it.
           if (!response || !response.message) {
@@ -111,7 +111,6 @@
 
   // Export functions to global scope
   window.CaregiverTools = window.CaregiverTools || {};
-  window.CaregiverTools.generateClockId = generateClockId;
   window.CaregiverTools.fetchCurrentMessage = fetchCurrentMessage;
   window.CaregiverTools.generateUniqueClockId = generateUniqueClockId;
   window.CaregiverTools.API_ENDPOINT = API_ENDPOINT;

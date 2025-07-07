@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Dementia Day Clock Admin - Caregiver.tools</title>
+        <title>Day Clock Admin - Caregiver.tools</title>
         <link rel="stylesheet" href="../style.css" />
         <style>
             input[type="text"],
@@ -17,32 +17,43 @@
     <body>
         <nav>
             <a href="../">Caregiver.tools</a> -
-            <a href="./">Dementia Day Clock</a>
+            <a href="./">Day Clock</a>
         </nav>
 
         <main>
-            <h1>Admin Page</h1>
+            <h1>Day Clock Admin</h1>
 
             <p>
-                Bookmark this page! This is the only way that you, the
-                caregiver, can customize your Dementia Day Clock later. There
-                are no user accounts or passwords.
+                Bookmark this page. This is the only way that you, the
+                caregiver, can customize the Day Clock later. There are no user
+                accounts or passwords.
+            </p>
+            <p class="alert alert-warning">
+                Do not share this page’s web address. It contains a unique code
+                for your Day Clock.
             </p>
 
-            <h2>Manage Your Clock</h2>
+            <h2>Customize Your Clock</h2>
 
+            <p>
+                You can set a custom message to be displayed at the bottom of
+                the Day Clock.
+            </p>
             <label for="message-input">Custom Message:</label>
             <textarea
                 id="message-input"
                 placeholder="e.g. Your doctor's appointment is {{Date:2025-07-01}}."
+                maxlength="280"
             ></textarea>
             <p>
-                You can write <tt>{{Date:YYYY-MM-DD}}</tt> with a future date
-                and it will be shown in natural language, such as "tomorrow" or
-                "in 5 days".
+                <small>
+                    You can write <tt>{{Date:YYYY-MM-DD}}</tt> with a future
+                    date and it will be shown in natural language, such as
+                    “tomorrow” or “in 5 days”.
+                </small>
             </p>
 
-            <button id="save-message-btn">Primary</button>
+            <button id="save-message-btn">Submit</button>
             <div id="status-message"></div>
         </main>
 
@@ -131,7 +142,7 @@
                         }
                         const data = await response.json();
                         showStatus(
-                            "Saved. The Dementia Day Clock can take several minutes to update.",
+                            "Saved. The Day Clock can take up to 15 minutes to update.",
                             false
                         );
                     } catch (error) {
