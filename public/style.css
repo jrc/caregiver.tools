@@ -1,33 +1,75 @@
 body {
+    color: rgb(33, 37, 41);
     font-family: system-ui, sans-serif;
+    line-height: 1.5;
+}
+
+/* Based on https://getbootstrap.com/docs/4.0/content/reboot/ */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+p,
+ul,
+ol {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+a {
+    color: rgb(0, 123, 255);
+}
+a:visited {
+    color: rgb(0, 123, 255);
+}
+a:hover {
+    color: rgb(0, 86, 179);
+}
+
+button {
+    background-color: rgb(0, 123, 255);
+    border: 1px solid rgb(0, 123, 255);
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: inherit;
+    padding: 0.375rem 0.75rem;
 }
 
 /* Based on https://web.archive.org/web/20190408174002/https://jrl.ninja/etc/1/ */
 main {
+    margin: auto;
     max-width: 70ch;
     padding: 2rem;
-    margin: auto;
-    line-height: 1.6;
-}
-
-p,
-li {
-    color: rgb(33, 37, 41);
 }
 
 .alert {
+    border: 1px solid;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
     margin-top: 1rem;
-    padding: 0.75rem;
+    padding: 0.75rem 1.25rem;
 }
-.alert.success {
-    background-color: #d4edda;
-    color: #155724;
+.alert-success {
+    background-color: rgb(212, 237, 218);
+    border-color: rgb(195, 230, 203);
+    color: rgb(21, 87, 36);
 }
-.alert.warning {
-    background-color: #fff3cd;
-    color: #664d03;
+.alert-warning {
+    background-color: rgb(255, 243, 205);
+    border-color: rgb(255, 238, 186);
+    color: rgb(133, 100, 4);
 }
-.alert.error {
-    background-color: #f8d7da;
-    color: #721c24;
+.alert-danger {
+    background-color: rgb(248, 215, 218);
+    border-color: rgb(245, 198, 203);
+    color: rgb(114, 28, 36);
 }
