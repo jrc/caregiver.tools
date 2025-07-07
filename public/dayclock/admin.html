@@ -24,13 +24,12 @@
             <h1>Day Clock Admin</h1>
 
             <p>
-                Bookmark this page. This is the only way that you, the
-                caregiver, can customize the Day Clock later. There are no user
-                accounts or passwords.
+                Bookmark this secret page. This is the only way that you, the
+                caregiver, can customize the Day Clock later.
             </p>
-            <p class="alert alert-warning">
-                Do not share this page’s web address. It contains a unique code
-                for your Day Clock.
+            <p>
+                ⚠︎ Don’t share this page publicly. The web address contains a
+                code that identifies your Day Clock.
             </p>
 
             <h2>Customize Your Clock</h2>
@@ -142,7 +141,7 @@
                         }
                         const data = await response.json();
                         showStatus(
-                            "Saved. The Day Clock can take up to 15 minutes to update.",
+                            "Saved. It can up to 15 minutes for the device to update.",
                             false
                         );
                     } catch (error) {
@@ -175,5 +174,18 @@
                 );
             })();
         </script>
+
+        <script>
+            window.goatcounter = {
+                path: function (p) {
+                    return location.host + p;
+                }
+            };
+        </script>
+        <script
+            data-goatcounter="https://jrcplus.goatcounter.com/count"
+            async
+            src="//gc.zgo.at/count.js"
+        ></script>
     </body>
 </html>
