@@ -1,3 +1,23 @@
+<!--
+    The HTML/CSS/JS in this file MUST be compatible with Safari 9.
+    This means, at least:
+    - Use `var` instead of `let` and `const`.
+        <https://caniuse.com/let>
+    - Don't use async/await or arrow functions.
+    - Don't use trailing commas, as they can be interpreted as syntax errors.
+        In `.prettierrc.json`, set `trailingComma: "none"`.
+    - Use `XMLHttpRequest()` instead of `fetch()`.
+        <https://caniuse.com/?search=fetch>
+    - Use `getQueryParam()` instead of `URLSearchParams`.
+        <https://caniuse.com/?search=URLSearchParams>
+    - Use Moment.js instead of `toLocaleTimeString()`.
+        <https://caniuse.com/?search=toLocaleTimeString%3Aoptions>
+        `toLocaleDate/TimeString(locale, ...)` is not implemented and polyfill.io
+        returns the time in UTC timezone.
+    - Use Moment.js to parse ISO 8601 date strings. Safari 9's Date constructor may
+        treat them as UTC midnight without time/timezone info.
+-->
+
 <!doctype html>
 <html lang="en">
     <head>
@@ -216,6 +236,57 @@
                 }
 
                 /**
+                 * Helper function that returns a human-friendly string describing the time until a given date.
+                 * @param {string} dateString - An ISO date string (YYYY-MM-DD).
+                 * @returns {string} The descriptive string (e.g., "is today", "is in 5 days").
+                 */
+                function describeDate(dateString) {
+                    var today = moment().startOf("day");
+                    var targetDate = moment(dateString, "YYYY-MM-DD").startOf(
+                        "day"
+                    );
+
+                    if (!targetDate.isValid()) {
+                        return "(invalid date)";
+                    }
+
+                    var deltaDays = targetDate.diff(today, "days");
+
+                    if (deltaDays < 0) {
+                        return Math.abs(deltaDays) + " days ago";
+                    } else if (deltaDays === 0) {
+                        return "today";
+                    } else if (deltaDays === 1) {
+                        return "tomorrow";
+                    } else {
+                        return "in " + deltaDays + " days";
+                    }
+                }
+
+                /**
+                 * Processes a message string, replacing any known template placeholders with dynamic content.
+                 * The function name part (i.e. "Date") is case-insensitive.
+                 * @param {string} message - The raw message from the caregiver.
+                 * @returns {string} The message with placeholders substituted.
+                 */
+                function processMessage(message) {
+                    if (!message) {
+                        return "";
+                    }
+
+                    // Template format: {{Date:YYYY-MM-DD}}
+                    var templateRegex =
+                        /{{\s*Date\s*:\s*([0-9]{4}-[0-9]{2}-[0-9]{2})\s*}}/gi;
+
+                    return message.replace(
+                        templateRegex,
+                        function (match, dateString) {
+                            return describeDate(dateString);
+                        }
+                    );
+                }
+
+                /**
                  * Fetches the announcement message from the Worker API.
                  * @param {string} id - The clock ID.
                  * @returns {Promise<Object|null>} A promise that resolves with the message data
@@ -364,8 +435,10 @@
                     );
                     fetchClockData(clockId).then(function (responseData) {
                         if (responseData && responseData.message) {
-                            announcementElement.textContent =
-                                responseData.message;
+                            var rawMessage = responseData.message;
+                            var processedMessage = processMessage(rawMessage);
+                            announcementElement.textContent = processedMessage;
+
                             if (middleSectionElement) {
                                 middleSectionElement.style.display = ""; // Show it
                                 console.debug(

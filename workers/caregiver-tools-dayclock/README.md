@@ -19,28 +19,7 @@ This project delivers a static-page-based **Dementia Day Clock** featuring a cus
   * **No Accounts:** The system requires **no user accounts, logins, or traditional authentication**.
   * **Passphrase-based Pairing:** Each clock pairs with its admin via a unique **`clock_id`**. This `clock_id` serves as the write credential and must be **typeable** (e.g., 2-3 random dictionary words). The `clock_id` does not need to be secret from the end-user, only from the general public.
   * **Static Pages / Minimal Backend:** Frontend applications (clock and admin) are **static HTML/CSS/JavaScript**, with no server-side rendering or complex custom backend logic. A lightweight centralized **key-value store** provides persistent storage for changeable text messages.
-  * **Safari 9 Compatibility (Clock):** The end-user clock web app **must be Safari 9 compatible** (i.e. iOS 9 (9/2015) / OS X El Capitan (9/2015)).
-
-    * Use var instead of let
-    https://caniuse.com/let
-
-    * Use getQueryParam() instead of URLSearchParams
-    https://caniuse.com/?search=URLSearchParams
-
-    * Use Moment.js instead of toLocaleTimeString()
-    https://caniuse.com/?search=toLocaleTimeString%3Aoptions
-    // toLocaleDate/TimeString(locale, ...) is not implemented
-    // and polyfill.io returns the time in UTC timezone, so use Moment.js.
-
-    * Use XMLHttpRequest() instead of fetch()
-    https://caniuse.com/?search=fetch
-
-    * **Prettier `trailingComma: "none"`:** The `.prettierrc.json` configuration is set to `\"trailingComma\": \"none\"` to avoid trailing commas in JavaScript, as Safari 9's JavaScript engine can interpret them as syntax errors in some contexts, especially for function calls or array/object literals.
-
-/* Safari 9's Date constructor doesn't reliably parse ISO 8601 date strings
-   without time/timezone info, often treating them as UTC midnight,
-   leading to potential timezone issues. */
-
+  * **Safari 9 Compatibility (Clock):** The end-user clock web app **must be Safari 9 compatible** (i.e. iOS 9 (9/2015) / OS X El Capitan (9/2015)). See notes at the top of `clock.html`.
   * **Modern Browser Compatibility (Admin):** The admin web app can utilize **modern browser features** like `fetch` and ES6+ JavaScript.
   * **Update Latency:** Message updates do not require real-time delivery; updates **within a few minutes are acceptable**.
 

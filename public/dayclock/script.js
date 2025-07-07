@@ -1,3 +1,23 @@
+/*
+  The JS in this file MUST be compatible with Safari 9.
+  This means, at least:
+    - Use `var` instead of `let` and `const`.
+      <https://caniuse.com/let>
+    - Don't use async/await or arrow functions.
+    - Don't use trailing commas, as they can be interpreted as syntax errors.
+      In `.prettierrc.json`, set `trailingComma: "none"`.
+    - Use `XMLHttpRequest()` instead of `fetch()`.
+      <https://caniuse.com/?search=fetch>
+    - Use `getQueryParam()` instead of `URLSearchParams`.
+      <https://caniuse.com/?search=URLSearchParams>
+    - Use Moment.js instead of `toLocaleTimeString()`.
+      <https://caniuse.com/?search=toLocaleTimeString%3Aoptions>
+      `toLocaleDate/TimeString(locale, ...)` is not implemented and polyfill.io
+      returns the time in UTC timezone.
+    - Use Moment.js to parse ISO 8601 date strings. Safari 9's Date constructor may
+      treat them as UTC midnight without time/timezone info.
+*/
+
 (function () {
   "use strict";
 
@@ -15,7 +35,7 @@
     return [
       EFF_SHORT_WORDLIST[randomIndex1],
       EFF_SHORT_WORDLIST[randomIndex2],
-      EFF_SHORT_WORDLIST[randomIndex3],
+      EFF_SHORT_WORDLIST[randomIndex3]
     ].join("-");
   }
 
@@ -79,7 +99,7 @@
             console.warn(
               "Generated ID '" +
                 clockId +
-                "' is already in use. Trying a new one.",
+                "' is already in use. Trying a new one."
             );
             attemptGeneration();
           }

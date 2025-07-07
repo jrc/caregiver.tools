@@ -14,3 +14,20 @@ p,
 li {
     color: rgb(33, 37, 41);
 }
+
+.alert {
+    margin-top: 1rem;
+    padding: 0.75rem;
+}
+.alert.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+.alert.warning {
+    background-color: #fff3cd;
+    color: #664d03;
+}
+.alert.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}

@@ -4,25 +4,8 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Dementia Day Clock Admin - Caregiver.tools</title>
+        <link rel="stylesheet" href="../style.css" />
         <style>
-            body {
-                font-family: system-ui, sans-serif;
-                max-width: 640px;
-                margin: 2rem auto;
-                line-height: 1.6;
-            }
-            h1,
-            h2 {
-                color: #333;
-            }
-            .input-group {
-                margin-bottom: 1rem;
-            }
-            label {
-                display: block;
-                margin-bottom: 0.5rem;
-                font-weight: bold;
-            }
             input[type="text"],
             textarea {
                 width: 100%;
@@ -32,17 +15,11 @@
                 font-size: 1rem;
                 box-sizing: border-box;
             }
-            .clock-url-display {
-                display: block;
-                font-family: monospace;
-                font-size: smaller;
-                color: #555;
-                padding: 0.5rem 0;
-            }
             textarea {
                 resize: vertical;
                 min-height: 100px;
             }
+
             button {
                 background-color: #007bff;
                 color: white;
@@ -53,68 +30,44 @@
                 cursor: pointer;
                 transition: background-color 0.2s;
             }
-            button:hover {
-                background-color: #0056b3;
-            }
-            .urls {
-                margin-top: 2rem;
-                padding: 1rem;
-                background-color: #f4f4f4;
-                border-radius: 4px;
-                word-wrap: break-word;
-            }
-            .status {
-                margin-top: 1rem;
-                padding: 0.75rem;
-                border-radius: 4px;
-                display: none;
-            }
-            .status.success {
-                background-color: #d4edda;
-                color: #155724;
-            }
-            .status.error {
-                background-color: #f8d7da;
-                color: #721c24;
-            }
-            #qrcode-display {
-                margin-top: 1rem;
-                text-align: center;
-            }
         </style>
     </head>
     <body>
-        <h1>Dementia Day Clock - Admin Page</h1>
+        <nav>
+            <a href="../">Caregiver.tools</a> -
+            <a href="./">Dementia Day Clock</a>
+        </nav>
+        <main>
+            <h1>Admin Page</h1>
 
-        <div id="manage-section">
-            <h2>Manage Your Clock</h2>
             <p>
-                Bookmark this page. You, the caregiver, will need this URL to
-                remotely change the Day Clock message later.
+                Bookmark this page! This is the only way that you, the
+                caregiver, can customize your Dementia Day Clock later. There
+                are no user accounts or passwords.
             </p>
-            <div class="admin-url-display">
-                <label>Your Admin Page URL:</label>
-                <span id="admin-url" class="clock-url-display"></span>
-            </div>
-            <div class="input-group">
-                <label for="message-input">Message to Display</label>
-                <textarea
-                    id="message-input"
-                    placeholder="e.g., Don't forget your doctor's appointment at 2 PM."
-                ></textarea>
-            </div>
-            <button id="save-message-btn">Save Message</button>
-            <div id="status-message" class="status"></div>
-        </div>
 
-        <script src="eff_short_wordlist_1.js"></script>
+            <h2>Manage Your Clock</h2>
+            <label for="message-input">Custom Message</label>
+            <textarea
+                id="message-input"
+                placeholder="e.g. Your doctor's appointment is {{Date:2025-07-01}}."
+            ></textarea>
+            <p>
+                You can write <tt>{{Date:YYYY-MM-DD}}</tt> with a future date
+                and it will be shown in natural language, such as "tomorrow" or
+                "in 5 days".
+            </p>
+
+            <button id="save-message-btn">Submit</button>
+            <div id="status-message" class="alert"></div>
+        </main>
+
         <script src="script.js"></script>
         <script>
             (function () {
                 "use strict";
 
                 // --- DOM Elements ---
-                const adminUrlDisplay = document.getElementById("admin-url"); // Renamed from clock-url, for admin page URL
                 const messageInput = document.getElementById("message-input");
                 const saveMessageBtn =
                     document.getElementById("save-message-btn");
@@ -128,8 +81,8 @@
                 function showStatus(text, isError = false) {
                     statusMessage.textContent = text;
                     statusMessage.className = isError
-                        ? "status error"
-                        : "status success";
+                        ? "alert error"
+                        : "alert success";
                     statusMessage.style.display = "block";
                 }
 
@@ -142,7 +95,7 @@
                     try {
                         const data =
                             await window.CaregiverTools.fetchCurrentMessage(
-                                clockId,
+                                clockId
                             );
                         if (data) {
                             messageInput.value = data.message || "";
@@ -153,7 +106,7 @@
                         console.error("Error loading current message:", error);
                         showStatus(
                             "Could not retrieve the current message.",
-                            true,
+                            true
                         );
                     }
                 }
@@ -170,7 +123,7 @@
                     }
 
                     saveMessageBtn.disabled = true;
-                    saveMessageBtn.textContent = "Saving...";
+                    saveMessageBtn.textContent = "Sending...";
                     statusMessage.style.display = "none";
 
                     try {
@@ -182,30 +135,27 @@
                                 body: JSON.stringify({
                                     clock_id: clockIdToSave,
                                     message: message,
-                                    imageUrl: null, // For future use
-                                }),
-                            },
+                                    imageUrl: null // For future use
+                                })
+                            }
                         );
 
                         if (!response.ok) {
                             throw new Error(
-                                `Server responded with status: ${response.status}`,
+                                `Server responded with status: ${response.status}`
                             );
                         }
                         const data = await response.json();
                         showStatus(
-                            `Message saved successfully for "${data.clock_id}"!`,
-                            false,
+                            "Saved. The Dementia Day Clock can take several minutes to update.",
+                            false
                         );
                     } catch (error) {
                         console.error("Error saving message:", error);
-                        showStatus(
-                            "Failed to save message. Please check the Clock ID and your connection.",
-                            true,
-                        );
+                        showStatus("Unable to save.", true);
                     } finally {
                         saveMessageBtn.disabled = false;
-                        saveMessageBtn.textContent = "Save Message";
+                        saveMessageBtn.textContent = "Submit";
                     }
                 }
 
@@ -221,16 +171,12 @@
                     return; // Stop execution
                 }
 
-                // Populate admin URL for bookmarking
-                const fullAdminUrl = window.location.href;
-                adminUrlDisplay.textContent = fullAdminUrl;
-
                 // Fetch message for the ID from the URL
                 loadCurrentMessage(clockIdFromUrl);
 
                 // Save Message button now takes the clockId directly
                 saveMessageBtn.addEventListener("click", () =>
-                    saveMessage(clockIdFromUrl),
+                    saveMessage(clockIdFromUrl)
                 );
             })();
         </script>

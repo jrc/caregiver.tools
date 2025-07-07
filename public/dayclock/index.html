@@ -10,19 +10,24 @@
                 margin-top: 0.5rem;
             }
 
-            .clock-url {
-                font-family: monospace;
+            .label-url {
                 font-size: small;
-                word-break: break-all;
+                word-break: break-word;
+                line-height: 1;
             }
 
-            .clock-url-typeable {
+            .typeable-url {
                 font-size: x-large;
+                word-break: break-word;
+                line-height: 1;
             }
         </style>
     </head>
 
     <body>
+        <nav>
+            <a href="../">Caregiver.tools</a>
+        </nav>
         <main>
             <h1>Dementia Day Clock</h1>
             <p>
@@ -34,15 +39,15 @@
                 displayed on the clock.
             </p>
 
-            <h2>Requirements</h2>
+            <h2>Hardware Requirements</h2>
             <p>
                 You need an unused phone or tablet to serve as the dedicated
                 Dementia Day Clock. You will be completely erasing that device.
             </p>
             <p>
                 Dementia Day Clock has been tested on iPhone and iPad running
-                iOS 9 and later. To check the version of iOS on your device, go
-                to the Settings app > General > About and look for Version.
+                iOS 9 and later. To check the version of iOS on a device, go to
+                the Settings app &gt; General &gt; About and look for Version.
                 <a href="https://iosref.com/ios"
                     >All iPhone and iPad devices since 2011 can be upgraded to
                     iOS 9.</a
@@ -54,154 +59,234 @@
                 success.
             </p>
 
-            <h2>Installation</h2>
-            <details>
-                <summary><b>Instructions for iOS 9</b></summary>
-                <ol>
-                    <li>
-                        Go to <b>Settings > General > Reset</b>. Tap
-                        <b>Erase All Content and Settings</b>, then
-                        <b>Erase</b> to confirm.
-                    </li>
-                    <li>
-                        Set it up as a new device:
-                        <ul>
-                            <li>
-                                Choose your language, country, and Wi-Fi
-                                network.
-                            </li>
-                            <li>
-                                Location Services: Tap
-                                <b>Enable Location Services</b> (optional).
-                            </li>
-                            <li>
-                                Passcode: Tap
-                                <b>Passcode Options</b>, then
-                                <b>Don’t Add Passcode</b>, and <b>Continue</b>.
-                            </li>
-                            <li>
-                                Apps &amp; Data: Tap
-                                <b>Set up as New iPhone/iPad</b>.
-                            </li>
-                            <li>
-                                Apple ID: Tap
-                                <b>Don’t have an Apple ID or forgot it?</b>,
-                                then <b>Set Up Later in Settings</b>, then
-                                <b>Don’t Use</b>.
-                            </li>
-                            <li>Terms and Conditions: Tap <b>Agree</b>.</li>
-                            <li>Siri: Tap <b>Turn On Siri Later</b>.</li>
-                            <li>
-                                Diagnostics: Tap
-                                <b>Send to Apple</b> (optional).
-                            </li>
-                            <li>
-                                App Analytics: Tap
-                                <b>Share with App Developers</b> (optional).
-                            </li>
-                            <li>Finally, tap <b>Get Started</b>.</li>
-                        </ul>
-                    </li>
-                    <li>
-                        Go to the
-                        <b>Settings</b> app >
-                        <b>General > Accessibility > Guided Access</b>, and turn
-                        Guided Access <b>on</b>. Tap
-                        <b>Passcode Settings</b> and enter a Guided Access
-                        Passcode.
-                    </li>
-                    <li>
-                        Go to the <b>Settings</b> app >
-                        <b>General > Auto-Lock</b>, then choose <b>Never</b>.
-                    </li>
-                    <li>
-                        Go to the <b>Safari</b> app and enter the web address<br />
-                        <span class="clock-url clock-url-typeable"></span>
-                    </li>
-                    <li>
-                        Tap the <b>Share</b> button
-                        <img
-                            src="ios-share-icon.png"
-                            alt="iOS share icon"
-                            style="height: 1em"
-                        />, then <b>Add to Home Screen</b>, then <b>Add</b>.
-                        This installs Dementia Day Clock web app.
-                    </li>
-                    <li>Go to the <b>Day Clock</b> app.</li>
-                    <li>
-                        <b>Triple-click the Home button</b>, then tap
-                        <b>Start</b> to enter Guided Access
-                        <a href="https://support.apple.com/en-us/111795"
-                            >(single app mode).</a
-                        >
-                    </li>
-                    <li>
-                        Position your Dementia Day Clock as desired. Make sure
-                        the device is plugged in and charging. As it can be
-                        confused for a normal phone or tablet, you may need to
-                        consider using tape or other means to keep the device in
-                        place.
-                    </li>
-                </ol>
-            </details>
-            <details>
-                <summary><b>Instructions for iOS 12</b></summary>
-                <ol>
-                    <li>
-                        Go to Settings > General >
-                        <b>Reset</b> (or <b>Transfer or Reset iPhone/iPad</b>).
-                        Tap <b>Erase All Content and Settings</b>, and
-                        <b>Erase</b> to confirm.
-                    </li>
-                    <li>
-                        Set up the iPhone or iPad as a new device:
-                        <ul>
-                            <li>
-                                Choose your language, country, and Wi-Fi
-                                network.
-                            </li>
-                            <li>???</li>
-                        </ul>
-                    </li>
-                    <li>
-                        Open Camera and scan the code below:
-                        <div id="qrcode-display"></div>
-                        <span class="clock-url"></span>
-                    </li>
-                    <li>
-                        Tap the <b>Share</b> button
-                        <img
-                            src="ios-share-icon.png"
-                            alt="iOS share icon"
-                            style="height: 1em"
-                        />, then <b>Add to Home Screen</b>. This installs
-                        Dementia Day Clock as a web app.
-                    </li>
-                    <li>
-                        Go to the
-                        <b>Settings</b> app >
-                        <b>General > Accessibility > Guided Access</b>, and turn
-                        Guided Access <b>on</b>. Tap
-                        <b>Passcode Settings</b> and enter a Guided Access
-                        Passcode.
-                    </li>
-                    <li>
-                        Go to Settings > General > <b>Auto-Lock</b>, then choose
-                        <b>Never</b>.
-                    </li>
-                    <li>
-                        <b>Triple-click the Side or Home button</b>, then tap
-                        <b>Start</b> to enter Guided Access (single app mode).
-                    </li>
-                    <li>
-                        Position your Dementia Day Clock as desired. Make sure
-                        the device is plugged in and charging. As it can be
-                        confused for a normal phone or tablet, you may need to
-                        consider using tape or other means to keep the device in
-                        place.
-                    </li>
-                </ol>
-            </details>
+            <h2>Instructions For iOS 9</h2>
+            <p>
+                Perform the steps below on the device that will serve as the
+                Dementia Day Clock.
+            </p>
+
+            <h3>Preparing the Device</h3>
+            <ol>
+                <li>
+                    Go to the
+                    <b>Settings</b>
+                    <img
+                        src="img/Settings.png"
+                        alt="Settings app icon"
+                        style="height: 1em;"
+                    />
+                    app &gt; General &gt; Reset</b>. Tap
+                    <b>Erase All Content and Settings</b>, then <b>Erase</b> to
+                    confirm.
+                </li>
+                <li>
+                    Set up the iPhone/iPad as a new device, without a passcode,
+                    Apple ID, or Siri:
+                    <ul>
+                        <li>
+                            Choose your language, country, and Wi-Fi network.
+                        </li>
+                        <li>
+                            Location Services: Tap
+                            <b>Enable Location Services</b> (optional).
+                        </li>
+                        <li>
+                            Passcode: Tap
+                            <b>Passcode Options</b>, then
+                            <b>Don’t Add Passcode</b>, and <b>Continue</b>.
+                        </li>
+                        <li>
+                            Apps &amp; Data: Tap
+                            <b>Set up as New iPhone/iPad</b>.
+                        </li>
+                        <li>
+                            Apple ID: Tap
+                            <b>Don’t have an Apple ID or forgot it?</b>, then
+                            <b>Set Up Later in Settings</b>, then
+                            <b>Don’t Use</b>.
+                        </li>
+                        <li>Terms and Conditions: Tap <b>Agree</b>.</li>
+                        <li>Siri: Tap <b>Turn On Siri Later</b>.</li>
+                        <li>
+                            Diagnostics: Tap
+                            <b>Send to Apple</b> (optional).
+                        </li>
+                        <li>
+                            App Analytics: Tap
+                            <b>Share with App Developers</b> (optional).
+                        </li>
+                        <li>Finally, tap <b>Get Started</b>.</li>
+                    </ul>
+                </li>
+                <li>
+                    Go to the
+                    <b>Settings</b>
+                    <img
+                        src="img/Settings.png"
+                        alt="Settings app icon"
+                        style="height: 1em;"
+                    />
+                    app &gt;
+                    <b>General &gt; Accessibility &gt; Guided Access</b>, and
+                    set Guided Access to <b>On</b>. Tap
+                    <b>Passcode Settings</b> and enter a Guided Access Passcode.
+                </li>
+                <li>
+                    Go to the
+                    <b>Settings</b>
+                    <img
+                        src="img/Settings.png"
+                        alt="Settings app icon"
+                        style="height: 1em;"
+                    />
+                    app &gt;
+                    <b>General &gt; Auto-Lock</b>, then choose <b>Never</b>.
+                </li>
+            </ol>
+
+            <h3>Installing the Day Clock Web App</h3>
+            <ol>
+                <li>
+                    Go to the <b>Safari</b> app and enter the web address<br />
+                    <span class="clock-url typeable-url"></span>
+                    <p>
+                        ⚠︎ Do not share this web address. It contains a
+                        unique code for your Dementia Day Clock.
+                    </p>
+                </li>
+                <li>
+                    Tap the <b>Share</b> button
+                    <img
+                        src="img/Share.png"
+                        alt="iOS share icon"
+                        style="height: 1em;"
+                    />, then <b>Add to Home Screen</b>, then <b>Add</b>. This
+                    installs Dementia Day Clock as a web app.
+                </li>
+                <li>Go to the <b>Day Clock</b> app.</li>
+                <li>
+                    <b>Triple-click the Home button</b>, then tap
+                    <b>Start</b> to enter Guided Access
+                    <a href="https://support.apple.com/en-us/111795"
+                        >(single app mode).</a
+                    >
+                </li>
+                <li>
+                    Position your Dementia Day Clock as desired. Make sure the
+                    device is plugged in and charging. As it can be confused for
+                    a normal phone or tablet, you may need to consider using
+                    tape or other means to keep the device in place.
+                </li>
+            </ol>
+
+            <h2>Instructions For iOS 12</h2>
+            <p>
+                Perform the steps below on the device that will serve as the
+                Dementia Day Clock.
+            </p>
+
+            <h3>Preparing the Device</h3>
+            <ol>
+                <li>
+                    Go to the
+                    <b>Settings</b>
+                    <img
+                        src="img/Settings.png"
+                        alt="Settings app icon"
+                        style="height: 1em; vertical-align: middle;"
+                    />
+                    app &gt; General >
+                    <b>Reset</b> (or <b>Transfer or Reset iPhone/iPad</b>). Tap
+                    <b>Erase All Content and Settings</b>, and <b>Erase</b> to
+                    confirm.
+                </li>
+                <li>
+                    Set up the iPhone/iPad as a new device, without a passcode,
+                    Apple ID, or Siri:
+                    <ul>
+                        <li>
+                            Choose your language, country, and Wi-Fi network.
+                        </li>
+                        <li>???</li>
+                    </ul>
+                </li>
+                <li>
+                    Go to the
+                    <b>Settings</b>
+                    <img
+                        src="img/Settings.png"
+                        alt="Settings app icon"
+                        style="height: 1em;"
+                    />
+                    app &gt;
+                    <b>General &gt; Accessibility &gt; Guided Access</b>, and
+                    set Guided Access to <b>On</b>. Tap
+                    <b>Passcode Settings</b> and enter a Guided Access Passcode.
+                </li>
+                <li>
+                    Go to the
+                    <b>Settings</b>
+                    <img
+                        src="img/Settings.png"
+                        alt="Settings app icon"
+                        style="height: 1em;"
+                    />
+                    app &gt; General &gt; <b>Auto-Lock</b>, then choose
+                    <b>Never</b>.
+                </li>
+            </ol>
+
+            <h3>Installing the Web App</h3>
+            <ol>
+                <li>
+                    Open the <b>Camera</b>
+                    <img
+                        src="img/Camera.png"
+                        alt="Camera app icon"
+                        style="height: 1em;"
+                    />
+                    app and scan the code below:
+                    <div id="qrcode-display"></div>
+                    <span class="clock-url label-url"></span>
+                    <p>
+                        ⚠︎ Do not share this web address. It contains a
+                        unique code for your Dementia Day Clock.
+                    </p>
+                </li>
+                <li>
+                    Tap the <b>Share</b> button
+                    <img
+                        src="img/Share.png"
+                        alt="Share button icon"
+                        style="height: 1em;"
+                    />, then <b>Add to Home Screen</b>. This installs Dementia
+                    Day Clock as a web app.
+                </li>
+                <li>Go to the <b>Day Clock</b> app.</li>
+                <li>
+                    <b>Triple-click the Side or Home button</b>, then tap
+                    <b>Start</b> to enter Guided Access (single app mode).
+                </li>
+                <li>
+                    Position your Dementia Day Clock as desired. Make sure the
+                    device is plugged in and charging. As it can be confused for
+                    a normal phone or tablet, you may need to consider using
+                    tape or other means to keep the device in place.
+                </li>
+            </ol>
+
+            <h2>Customizing Your Dementia Day Clock</h2>
+            <p>
+                Bookmark the link below! This is the only way that you, the
+                caregiver, can customize your Dementia Day Clock later. There
+                are no user accounts or passwords.
+            </p>
+            <p>
+                <a href="" id="admin-url" class="typeable-url"></a>
+            </p>
+            <p>
+                ⚠︎ Do not share this link. It contains a unique code for your Dementia Day Clock.
+            </p>
         </main>
     </body>
 
@@ -209,39 +294,70 @@
     <script src="eff_short_wordlist_1.js"></script>
     <script src="script.js"></script>
     <script>
-        (function () {
+        (async () => {
             "use strict";
 
             // --- DOM Elements ---
-            var qrcodeDisplay = document.getElementById("qrcode-display");
-            var clockUrlElements = document.querySelectorAll(".clock-url");
+            const qrcodeDisplay = document.getElementById("qrcode-display");
+            const clockUrlElements = document.querySelectorAll(".clock-url");
+            const adminUrlElement = document.getElementById("admin-url");
+
+            // --- Cookie Handling ---
+            function getCookie(name) {
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(";");
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) === " ") c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) === 0)
+                        return c.substring(nameEQ.length, c.length);
+                }
+                return null;
+            }
+
+            function setCookie(name, value, days) {
+                let expires = "";
+                if (days) {
+                    const date = new Date();
+                    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie =
+                    name + "=" + (value || "") + expires + "; path=/";
+            }
 
             // --- Initial Page Load ---
+            const cookieName = "dayclock_id";
+            let clockId = getCookie(cookieName);
 
-            // Generate a unique clock ID by checking for collisions
-            window.CaregiverTools.generateUniqueClockId().then(
-                function (clockId) {
-                    // Populate URLs
-                    // Construct the base URL for clock.html, assuming it's in the same directory.
-                    var baseUrl = window.location.href.replace(
-                        "dayclock/",
-                        "dayclock/clock"
-                    );
-                    var fullClockUrl = baseUrl + "?id=" + clockId;
+            if (!clockId) {
+                // Generate a unique clock ID by checking for collisions
+                clockId = await window.CaregiverTools.generateUniqueClockId();
+                setCookie(cookieName, clockId, 365); // Store for a year
+            }
 
-                    for (var i = 0; i < clockUrlElements.length; i++) {
-                        clockUrlElements[i].textContent = fullClockUrl;
-                    }
+            let currentUrl = window.location.href;
+            currentUrl +=
+                window.location.hostname === "localhost"
+                    ? "index.html"
+                    : "index";
+            const baseClockUrl = currentUrl.replace("/index", "/clock");
+            const fullClockUrl = baseClockUrl + "?id=" + clockId;
 
-                    // Clear previous QR code and generate new one
-                    qrcodeDisplay.innerHTML = "";
-                    new QRCode(qrcodeDisplay, {
-                        text: fullClockUrl,
-                        height: 160,
-                        width: 160
-                    });
-                }
-            );
+            clockUrlElements.forEach((element) => {
+                element.textContent = fullClockUrl;
+            });
+
+            qrcodeDisplay.innerHTML = "";
+            new QRCode(qrcodeDisplay, {
+                text: fullClockUrl,
+                height: 128,
+                width: 128
+            });
+
+            const fullAdminUrl = fullClockUrl.replace("/clock", "/admin");
+            adminUrlElement.textContent = fullAdminUrl;
+            adminUrlElement.href = fullAdminUrl;
         })();
     </script>
 </html>
