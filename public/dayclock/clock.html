@@ -36,7 +36,12 @@
 
             body {
                 margin: 0;
-                font-family: system-ui, sans-serif;
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    "Helvetica Neue",
+                    Helvetica,
+                    sans-serif;
             }
 
             #container {
@@ -105,18 +110,20 @@
                 font-size: 7rem;
                 font-weight: 900;
                 text-transform: uppercase;
+                margin-bottom: 1rem;
             }
 
             /* 2. Weekday */
             .weekday {
-                font-size: 6rem;
-                font-weight: 700;
+                font-size: 5.5rem;
+                font-weight: 600;
             }
 
             /* 3. Current Time */
             .time {
-                font-size: 4.5rem;
-                font-weight: 700;
+                font-size: 5.5rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
             }
 
             /* 4. Date */
@@ -126,27 +133,25 @@
             }
 
             .announcement {
-                font-size: 2.5rem;
-                font-weight: normal;
+                font-size: 2rem;
                 margin: 2rem;
             }
 
             @media (max-width: 768px) {
                 .partofday {
-                    font-size: 5rem;
+                    font-size: 5.5rem;
                 }
                 .weekday {
-                    font-size: 4rem;
+                    font-size: 4.5rem;
                 }
                 .time {
-                    font-size: 3.5rem;
+                    font-size: 4.5rem;
                 }
                 .date {
-                    font-size: 2.5rem;
+                    font-size: 3rem;
                 }
                 .announcement {
                     font-size: 2rem;
-                    margin: 1rem;
                 }
             }
 
