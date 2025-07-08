@@ -84,7 +84,19 @@
             <a href="../">Caregiver.tools</a>
         </nav>
         <main>
+            <!-- Browser compatibility warning -->
+            <div id="browser-incompatible" class="alert alert-secondary">
+                <h3>🛑 Open This Page on a Newer Device</h3>
+                <p>
+                    To set up and manage a Day Clock, open this page in a newer
+                    web browser. The Day Clock itself is designed to run on
+                    older devices, but the caregiver interface requires a newer
+                    browser.
+                </p>
+            </div>
+
             <h1>Day Clock</h1>
+
             <p>
                 Day Clock is a free web app that shows the day, time, and date
                 in a way that’s easy to understand for people with cognitive
@@ -143,10 +155,6 @@
                             erase the device, so that no other apps interfere
                             with the operation of the Day Clock.
                         </p>
-                        <div class="alert alert-warning">
-                            Your device will be erased. Make sure you have a
-                            copy of any data that you want to keep.
-                        </div>
                         <ol>
                             <li>
                                 Go to the Settings
@@ -155,8 +163,16 @@
                                     alt="Settings app icon"
                                     style="height: 1em"
                                 />
-                                app &gt; General &gt; Reset. Tap “Erase All
-                                Content and Settings”, then “Erase” to confirm.
+                                app &gt; General &gt; Reset.
+
+                                <div class="alert alert-warning">
+                                    Your device will be erased. Make sure you
+                                    have a copy of any data that you want to
+                                    keep.
+                                </div>
+
+                                Tap “Erase All Content and Settings”, then
+                                “Erase” to confirm.
                             </li>
                             <li>
                                 Set up the device as a new iPhone/iPad, with no
@@ -283,10 +299,6 @@
                             erase the device, so that no other apps interfere
                             with the operation of the Day Clock.
                         </p>
-                        <div class="alert alert-warning">
-                            Your device will be erased. Make sure you have a
-                            copy of any data that you want to keep.
-                        </div>
                         <ol>
                             <li>
                                 Go to the Settings
@@ -296,8 +308,16 @@
                                     style="height: 1em"
                                 />
                                 app &gt; General > Reset (or “Transfer or Reset
-                                iPhone/iPad”). Tap “Erase All Content and
-                                Settings”, then “Erase” to confirm.
+                                iPhone/iPad”).
+
+                                <div class="alert alert-warning">
+                                    Your device will be erased. Make sure you
+                                    have a copy of any data that you want to
+                                    keep.
+                                </div>
+
+                                Tap “Erase All Content and Settings”, then
+                                “Erase” to confirm.
                             </li>
                             <li>
                                 Set up the iPhone/iPad as a new device, without
@@ -419,68 +439,126 @@
     <script src="eff_short_wordlist_1.js"></script>
     <script src="script.js"></script>
     <script>
-        (async () => {
+        // Browser compatibility check
+        (function () {
             "use strict";
 
-            // --- DOM Elements ---
-            const qrcodeDisplay = document.getElementById("qrcode-display");
-            const clockUrlElements = document.querySelectorAll(".clock-url");
-            const adminUrlElement = document.getElementById("admin-url");
+            function checkBrowserCompatibility() {
+                var userAgent = navigator.userAgent;
+                var isCompatible = false;
 
-            // --- Cookie Handling ---
-            function getCookie(name) {
-                const nameEQ = name + "=";
-                const ca = document.cookie.split(";");
-                for (let i = 0; i < ca.length; i++) {
-                    let c = ca[i];
-                    while (c.charAt(0) === " ") c = c.substring(1, c.length);
-                    if (c.indexOf(nameEQ) === 0)
-                        return c.substring(nameEQ.length, c.length);
+                // Check Safari version (including iOS Safari)
+                if (
+                    userAgent.indexOf("Safari") !== -1 &&
+                    userAgent.indexOf("Chrome") === -1
+                ) {
+                    var safariMatch = userAgent.match(/Version\/(\d+)\.(\d+)/);
+                    if (safariMatch) {
+                        var majorVersion = parseInt(safariMatch[1]);
+                        var minorVersion = parseInt(safariMatch[2]);
+                        // Safari 10.1+ required for async/await
+                        isCompatible =
+                            majorVersion > 10 ||
+                            (majorVersion === 10 && minorVersion >= 1);
+                    }
                 }
-                return null;
-            }
 
-            function setCookie(name, value, days) {
-                let expires = "";
-                if (days) {
-                    const date = new Date();
-                    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-                    expires = "; expires=" + date.toUTCString();
+                // Check Chrome version
+                if (userAgent.indexOf("Chrome") !== -1) {
+                    var chromeMatch = userAgent.match(/Chrome\/(\d+)/);
+                    if (chromeMatch) {
+                        var chromeVersion = parseInt(chromeMatch[1]);
+                        // Chrome 55+ required for async/await
+                        isCompatible = chromeVersion >= 55;
+                    }
                 }
-                document.cookie =
-                    name + "=" + (value || "") + expires + "; path=/";
+
+                // Hide warning if browser is compatible
+                var warningElement = document.getElementById(
+                    "browser-incompatible"
+                );
+                if (isCompatible) {
+                    warningElement.style.display = "none";
+                }
+
+                return isCompatible;
             }
 
-            // --- Initial Page Load ---
-            const cookieName = "dayclock_id";
-            let clockId = getCookie(cookieName);
-
-            if (!clockId) {
-                // Generate a unique clock ID by checking for collisions
-                clockId = await window.CaregiverTools.generateUniqueClockId();
-                setCookie(cookieName, clockId, 365); // Store for a year
+            // Run compatibility check immediately
+            if (!checkBrowserCompatibility()) {
+                // Browser is not compatible, don't run the main script
+                return;
             }
 
-            let currentUrl = window.location.href;
-            if (currentUrl.endsWith("/")) {
-                currentUrl += "index";
-            }
-            const baseClockUrl = currentUrl.replace("/index", "/clock");
-            const fullClockUrl = baseClockUrl + "?id=" + clockId;
-            clockUrlElements.forEach((element) => {
-                element.textContent = fullClockUrl;
-            });
+            // Browser is compatible, run the main script
+            (async () => {
+                "use strict";
 
-            qrcodeDisplay.innerHTML = "";
-            new QRCode(qrcodeDisplay, {
-                text: fullClockUrl,
-                height: 128,
-                width: 128
-            });
+                // --- DOM Elements ---
+                const qrcodeDisplay = document.getElementById("qrcode-display");
+                const clockUrlElements =
+                    document.querySelectorAll(".clock-url");
+                const adminUrlElement = document.getElementById("admin-url");
 
-            const fullAdminUrl = fullClockUrl.replace("/clock", "/admin");
-            adminUrlElement.textContent = fullAdminUrl;
-            adminUrlElement.href = fullAdminUrl;
+                // --- Cookie Handling ---
+                function getCookie(name) {
+                    const nameEQ = name + "=";
+                    const ca = document.cookie.split(";");
+                    for (let i = 0; i < ca.length; i++) {
+                        let c = ca[i];
+                        while (c.charAt(0) === " ")
+                            c = c.substring(1, c.length);
+                        if (c.indexOf(nameEQ) === 0)
+                            return c.substring(nameEQ.length, c.length);
+                    }
+                    return null;
+                }
+
+                function setCookie(name, value, days) {
+                    let expires = "";
+                    if (days) {
+                        const date = new Date();
+                        date.setTime(
+                            date.getTime() + days * 24 * 60 * 60 * 1000
+                        );
+                        expires = "; expires=" + date.toUTCString();
+                    }
+                    document.cookie =
+                        name + "=" + (value || "") + expires + "; path=/";
+                }
+
+                // --- Initial Page Load ---
+                const cookieName = "dayclock_id";
+                let clockId = getCookie(cookieName);
+
+                if (!clockId) {
+                    // Generate a unique clock ID by checking for collisions
+                    clockId =
+                        await window.CaregiverTools.generateUniqueClockId();
+                    setCookie(cookieName, clockId, 365); // Store for a year
+                }
+
+                let currentUrl = window.location.href;
+                if (currentUrl.endsWith("/")) {
+                    currentUrl += "index";
+                }
+                const baseClockUrl = currentUrl.replace("/index", "/clock");
+                const fullClockUrl = baseClockUrl + "?id=" + clockId;
+                clockUrlElements.forEach((element) => {
+                    element.textContent = fullClockUrl;
+                });
+
+                qrcodeDisplay.innerHTML = "";
+                new QRCode(qrcodeDisplay, {
+                    text: fullClockUrl,
+                    height: 128,
+                    width: 128
+                });
+
+                const fullAdminUrl = fullClockUrl.replace("/clock", "/admin");
+                adminUrlElement.textContent = fullAdminUrl;
+                adminUrlElement.href = fullAdminUrl;
+            })();
         })();
     </script>
 
