@@ -6,6 +6,11 @@
         <title>Day Clock - Caregiver.tools</title>
         <link rel="stylesheet" href="../style.css" />
         <style>
+            main {
+                /* Unset if checkBrowserCompatibility() returns true */
+                opacity: 0.3;
+            }
+
             #qrcode-display {
                 margin-bottom: 0.5rem;
             }
@@ -83,18 +88,18 @@
         <nav>
             <a href="../">Caregiver.tools</a>
         </nav>
-        <main>
-            <!-- Browser compatibility warning -->
-            <div id="browser-incompatible" class="alert alert-secondary">
-                <h3>🛑 Open This Page on a Newer Device</h3>
-                <p>
-                    To set up and manage a Day Clock, open this page in a newer
-                    web browser. The Day Clock itself is designed to run on
-                    older devices, but the caregiver interface requires a newer
-                    browser.
-                </p>
-            </div>
 
+        <!-- Browser compatibility warning -->
+        <div id="browser-incompatible" class="alert alert-secondary">
+            <h3>🛑 Open This Page on a Newer Device</h3>
+            <p>
+                To set up and manage a Day Clock, open this page in a newer web
+                browser. The Day Clock itself is designed to run on older
+                devices, but the caregiver interface requires a newer browser.
+            </p>
+        </div>
+
+        <main>
             <h1>Day Clock</h1>
 
             <p>
@@ -473,21 +478,21 @@
                     }
                 }
 
-                // Hide warning if browser is compatible
-                var warningElement = document.getElementById(
-                    "browser-incompatible"
-                );
-                if (isCompatible) {
-                    warningElement.style.display = "none";
-                }
+                isCompatible = false;
 
                 return isCompatible;
             }
 
             // Run compatibility check immediately
-            if (!checkBrowserCompatibility()) {
-                // Browser is not compatible, don't run the main script
-                return;
+            if (checkBrowserCompatibility()) {
+                // Hide warning if browser is compatible
+                var warningElement = document.getElementById(
+                    "browser-incompatible"
+                );
+                warningElement.style.display = "none";
+
+                var mainElement = document.querySelector("main");
+                mainElement.style.opacity = "1";
             }
 
             // Browser is compatible, run the main script
