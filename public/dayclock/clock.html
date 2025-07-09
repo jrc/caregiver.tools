@@ -466,40 +466,17 @@
                     });
                 }
 
-                /**
-                 * Schedules the next message refresh based on the current part of the day.
-                 */
-                function scheduleNextMessageRefresh() {
-                    console.debug(
-                        "scheduleNextMessageRefresh: Calc next interval."
-                    );
-                    var currentInterval;
-
-                    console.debug(
-                        "scheduleNextMessageRefresh: Next fetch in",
-                        FETCH_DATA_INTERVAL / 1000,
-                        "s."
-                    );
-
-                    setTimeout(function () {
-                        console.debug(
-                            "scheduleNextMessageRefresh: Interval triggered. Fetching/Rescheduling."
-                        );
-                        fetchClockDataAndUpdateUI();
-                        scheduleNextMessageRefresh(); // Schedule the next one
-                    }, FETCH_DATA_INTERVAL);
-                }
-
                 // --- Initial Setup ---
-                // Always update time
-                updateTime();
-                scheduleNextUpdateTime(); // Schedule minute-by-minute clock updates
+                updateTime(); // initial update
+                scheduleNextUpdateTime();
 
-                // Initial fetch and dynamic periodic refresh for message data
-                console.debug("Init: First msg fetch.");
-                fetchClockDataAndUpdateUI();
-                console.debug("Init: Scheduling first msg refresh.");
-                scheduleNextMessageRefresh(); // Schedule the first message refresh
+                // Fetch and update message data
+                fetchClockDataAndUpdateUI(); // initial fetch
+                setInterval(function () {
+                    if (!document.body.classList.contains("theme-dark")) {
+                        fetchClockDataAndUpdateUI();
+                    }
+                }, FETCH_DATA_INTERVAL);
             })();
         </script>
 
