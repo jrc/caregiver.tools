@@ -272,27 +272,32 @@
 
                 /**
                  * Processes a message string, replacing any known template placeholders with dynamic content.
-                 * The function name part (i.e. "Date") is case-insensitive.
+                 * Also escapes HTML characters for safety.
                  * @param {string} message - The raw message from the caregiver.
-                 * @returns {string} The message with placeholders substituted.
+                 * @returns {string} The message with placeholders substituted and HTML escaped.
                  */
                 function processMessage(message) {
                     if (!message) {
                         return "";
                     }
 
-                    message = message.replace(/\n/g, "<br>");
+                    // First escape HTML characters
+                    var escapedMessage = message
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g, "&quot;")
+                        .replace(/'/g, "&#39;");
 
-                    // Template format: {{Date:YYYY-MM-DD}}
-                    var templateRegex =
-                        /{{\s*Date\s*:\s*([0-9]{4}-[0-9]{2}-[0-9]{2})\s*}}/gi;
+                    // Template format: [YYYY-MM-DD]
+                    var templateRegex = /\[([0-9]{4}-[0-9]{2}-[0-9]{2})\]/g;
 
-                    return message.replace(
-                        templateRegex,
-                        function (match, dateString) {
+                    // Replace newlines with <br> tags and process templates
+                    return escapedMessage
+                        .replace(/\n/g, "<br>")
+                        .replace(templateRegex, function (match, dateString) {
                             return describeDate(dateString);
-                        }
-                    );
+                        });
                 }
 
                 /**
@@ -469,6 +474,8 @@
                 }
 
                 // --- Double-tap to reload functionality ---
+                // Safari Mobile doesn't support the dblclick event, so we implement
+                // double-tap detection manually by tracking touch/click timing
                 var lastTapTime = 0;
                 var tapTimeout;
 

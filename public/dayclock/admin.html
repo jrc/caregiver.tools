@@ -8,7 +8,7 @@
         <style>
             input[type="text"],
             textarea {
-                font-size: 1.6rem;
+                font-size: 1.4rem;
                 padding: 1rem;
                 width: 100%;
             }
@@ -41,14 +41,14 @@
             <label for="message-input">Custom Message:</label>
             <textarea
                 id="message-input"
-                placeholder="e.g. Your doctor's appointment is {{Date:2025-07-01}}."
+                placeholder="e.g. Your doctor's appointment is [2025-07-01]."
                 maxlength="280"
             ></textarea>
             <p>
                 <small>
-                    You can write <tt>{{Date:YYYY-MM-DD}}</tt> with a future
-                    date and it will be shown in natural language, such as
-                    “tomorrow” or “in 5 days”.
+                    You can write <tt>[YYYY-MM-DD]</tt> with a future date and
+                    it will be shown in natural language, such as “tomorrow” or
+                    “in 5 days”.
                 </small>
             </p>
 
@@ -146,7 +146,7 @@
                         }
                         const data = await response.json();
                         showStatus(
-                            "Saved. It can take up to an hour for the device to update.",
+                            "Sent. It can take up to an hour for the device to update.",
                             false
                         );
                     } catch (error) {
@@ -154,7 +154,7 @@
                         showStatus("Unable to save.", true);
                     } finally {
                         saveMessageBtn.disabled = false;
-                        saveMessageBtn.textContent = "Submit";
+                        saveMessageBtn.textContent = "Send";
                     }
                 }
 
