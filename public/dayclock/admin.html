@@ -54,6 +54,11 @@
 
             <button id="save-message-btn">Submit</button>
             <div id="status-message"></div>
+
+            <p>
+                The Day Clock updates hourly. If you want to load the new
+                message immediately, you can double-tap on the Day Clock.
+            </p>
         </main>
 
         <script src="script.js"></script>
@@ -141,7 +146,7 @@
                         }
                         const data = await response.json();
                         showStatus(
-                            "Saved. It can take several minutes for the device to update.",
+                            "Saved. It can take up to an hour for the device to update.",
                             false
                         );
                     } catch (error) {

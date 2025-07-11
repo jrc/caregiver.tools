@@ -211,7 +211,7 @@
                 // --- Configuration ---
                 var API_ENDPOINT =
                     "https://caregiver-tools-dayclock.jrcplus.workers.dev";
-                var FETCH_DATA_INTERVAL = 10 * 60 * 1000; // 10 min
+                var FETCH_DATA_INTERVAL = 60 * 60 * 1000; // 60 min
 
                 // --- DOM Elements ---
                 var containerElement = document.getElementById("container");
@@ -280,6 +280,8 @@
                     if (!message) {
                         return "";
                     }
+
+                    message = message.replace(/\n/g, "<br>");
 
                     // Template format: {{Date:YYYY-MM-DD}}
                     var templateRegex =
@@ -444,10 +446,6 @@
                         if (responseData && responseData.message) {
                             var rawMessage = responseData.message;
                             var processedMessage = processMessage(rawMessage);
-                            processedMessage = processedMessage.replace(
-                                /\n/g,
-                                "<br>"
-                            );
                             // processedMessage =
                             //     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in volup";
                             announcementElement.innerHTML = processedMessage;
@@ -469,6 +467,33 @@
                         }
                     });
                 }
+
+                // --- Double-tap to reload functionality ---
+                var lastTapTime = 0;
+                var tapTimeout;
+
+                function handleTap() {
+                    var currentTime = new Date().getTime();
+                    var timeDiff = currentTime - lastTapTime;
+
+                    if (timeDiff < 300 && timeDiff > 0) {
+                        // Double-tap detected (within 300ms)
+                        clearTimeout(tapTimeout);
+                        location.reload();
+                    } else {
+                        // Single tap - set up timeout to reset
+                        clearTimeout(tapTimeout);
+                        tapTimeout = setTimeout(function () {
+                            lastTapTime = 0;
+                        }, 300);
+                    }
+
+                    lastTapTime = currentTime;
+                }
+
+                // Add event listeners for both touch and click events
+                document.body.addEventListener("touchstart", handleTap, false);
+                document.body.addEventListener("click", handleTap, false);
 
                 // --- Initial Setup ---
                 updateTime(); // initial update
