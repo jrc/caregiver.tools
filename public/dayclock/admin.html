@@ -41,14 +41,16 @@
             <label for="message-input">Custom Message:</label>
             <textarea
                 id="message-input"
-                placeholder="e.g. Your doctor's appointment is [2025-07-01]."
+                placeholder="e.g. Your doctor's appointment is [2025-07-01]. Your therapy session is [MON]."
                 maxlength="280"
             ></textarea>
             <p>
                 <small>
                     You can write <tt>[YYYY-MM-DD]</tt> with a future date and
-                    it will be shown in natural language, such as “tomorrow” or
-                    “in 5 days”.
+                    it will be shown in natural language, such as "tomorrow" or
+                    "in 5 days". You can also write <tt>[MON]</tt>,
+                    <tt>[TUE]</tt>, etc. to show the next occurrence of that
+                    weekday.
                 </small>
             </p>
 
@@ -122,7 +124,7 @@
                     }
 
                     saveMessageBtn.disabled = true;
-                    saveMessageBtn.textContent = "Sending...";
+                    saveMessageBtn.textContent = "Submitting...";
                     statusMessage.style.display = "none";
 
                     try {
@@ -146,7 +148,7 @@
                         }
                         const data = await response.json();
                         showStatus(
-                            "Sent. It can take up to an hour for the device to update.",
+                            "Done. It can take up to an hour for the device to update.",
                             false
                         );
                     } catch (error) {
@@ -154,7 +156,7 @@
                         showStatus("Unable to save.", true);
                     } finally {
                         saveMessageBtn.disabled = false;
-                        saveMessageBtn.textContent = "Send";
+                        saveMessageBtn.textContent = "Submit";
                     }
                 }
 
