@@ -522,26 +522,24 @@
                 // --- Double-tap to reload functionality ---
                 // Safari Mobile doesn't support the dblclick event, so we implement
                 // double-tap detection manually by tracking touch/click timing
-                var lastTapTime = 0;
+                var tapCount = 0;
                 var tapTimeout;
 
                 function handleTap() {
-                    var currentTime = new Date().getTime();
-                    var timeDiff = currentTime - lastTapTime;
+                    tapCount++;
 
-                    if (timeDiff < 300 && timeDiff > 0) {
-                        // Double-tap detected (within 300ms)
-                        clearTimeout(tapTimeout);
-                        location.reload();
-                    } else {
-                        // Single tap - set up timeout to reset
-                        clearTimeout(tapTimeout);
+                    if (tapCount === 1) {
+                        // First tap - wait to see if there's a second one
                         tapTimeout = setTimeout(function () {
-                            lastTapTime = 0;
+                            // Single tap - do nothing
+                            tapCount = 0;
                         }, 300);
+                    } else if (tapCount === 2) {
+                        // Second tap within timeout - double tap detected
+                        clearTimeout(tapTimeout);
+                        tapCount = 0;
+                        location.reload();
                     }
-
-                    lastTapTime = currentTime;
                 }
 
                 // Add event listeners for both touch and click events
