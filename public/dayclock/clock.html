@@ -545,9 +545,16 @@
                     }
                 }
 
-                // Add event listeners for both touch and click events
-                document.body.addEventListener("touchstart", handleTap, false);
-                document.body.addEventListener("click", handleTap, false);
+                // Use touchend for mobile devices, dblclick for desktop
+                // This prevents the double-firing issue with touchstart + click
+                document.body.addEventListener("touchend", handleTap, false);
+                document.body.addEventListener(
+                    "dblclick",
+                    function () {
+                        location.reload();
+                    },
+                    false
+                );
 
                 // --- Initial Setup ---
                 updateTime(); // initial update
