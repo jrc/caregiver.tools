@@ -38,29 +38,32 @@
                 You can set a custom message to be displayed at the bottom of
                 the Day Clock.
             </p>
+            <ul>
+                <li>
+                    The Day Clock looks for new messages hourly. To make it
+                    update immediately, double-tap on the Day Clock device’s
+                    screen.
+                </li>
+                <li>
+                    You can write dates in square brackets and it will be
+                    displayed in natural language, like “tomorrow” or “in 3
+                    days”. For a single day, write
+                    <tt>[YYYY-MM-DD]</tt>. For recurring appointments, write
+                    e.g. <tt>[Mon/Wed/Fri]</tt> (weekday abbreviations,
+                    separated with slashes) to describe the next occurrence of a
+                    single day from that list.
+                </li>
+            </ul>
+
             <label for="message-input">Custom Message:</label>
             <textarea
                 id="message-input"
-                placeholder="e.g. Your doctor's appointment is [2025-07-01]. Your therapy session is [MON]."
+                placeholder="e.g. Your doctor's appointment is [2025-07-01]. Your caregiver comes [Mon/Wed/Fri]."
                 maxlength="280"
             ></textarea>
-            <p>
-                <small>
-                    You can write <tt>[YYYY-MM-DD]</tt> with a future date and
-                    it will be shown in natural language, such as "tomorrow" or
-                    "in 5 days". You can also write <tt>[MON]</tt>,
-                    <tt>[TUE]</tt>, etc. to show the next occurrence of that
-                    weekday.
-                </small>
-            </p>
 
             <button id="save-message-btn">Submit</button>
             <div id="status-message"></div>
-
-            <p>
-                The Day Clock updates hourly. If you want to load the new
-                message immediately, you can double-tap on the Day Clock.
-            </p>
         </main>
 
         <script src="script.js"></script>
