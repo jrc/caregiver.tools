@@ -20,628 +20,646 @@
 
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0, user-scalable=no"
-        />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-        <meta http-equiv="refresh" content="86400" />
-        <title>Day Clock</title>
-        <style>
-            html,
-            body {
-                height: 100%;
-            }
 
-            body {
-                margin: 0;
-                font-family:
-                    system-ui,
-                    -apple-system,
-                    "Helvetica Neue",
-                    Helvetica,
-                    sans-serif;
-            }
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta http-equiv="refresh" content="86400" />
+    <title>Day Clock</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
 
-            #container {
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-            }
+        body {
+            margin: 0;
+            font-family:
+                system-ui,
+                -apple-system,
+                "Helvetica Neue",
+                Helvetica,
+                sans-serif;
+        }
 
-            .theme-dark {
-                background-color: black;
-                transition: background-color 3s ease-in-out;
-                color: rgba(255, 0, 0, 0.4);
-            }
+        #container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
 
-            .section {
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                text-align: center;
-            }
+        .theme-dark {
+            background-color: black;
+            transition: background-color 3s ease-in-out;
+            color: rgba(255, 0, 0, 0.4);
+        }
 
-            .morning .section-top {
-                background-color: #ffffe0;
-                transition: background-color 3s ease-in-out;
-            }
+        .section {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
 
-            .afternoon .section-top {
-                background-color: #87cefa;
-                transition: background-color 3s ease-in-out;
-            }
+        .morning .section-top {
+            background-color: #ffffe0;
+            transition: background-color 3s ease-in-out;
+        }
 
-            .evening .section-top {
-                background-color: #ffdab9;
-                transition: background-color 3s ease-in-out;
-            }
+        .afternoon .section-top {
+            background-color: #87cefa;
+            transition: background-color 3s ease-in-out;
+        }
 
-            .bedtime .section-top {
-                background-color: #000000;
-                transition: background-color 3s ease-in-out;
-            }
+        .evening .section-top {
+            background-color: #ffdab9;
+            transition: background-color 3s ease-in-out;
+        }
 
-            .section-middle {
-                background-color: rgb(255, 255, 255);
-            }
+        .bedtime .section-top {
+            background-color: #000000;
+            transition: background-color 3s ease-in-out;
+        }
 
-            .section-bottom {
-                background-image: url("photo.jpg");
-                background-size: cover;
-                background-position: center;
-                display: none; /* Always hide this section as photos are not supported */
-            }
+        .section-middle {
+            background-color: rgb(255, 255, 255);
+        }
 
-            .theme-dark .section-top,
-            .theme-dark .section-middle,
-            .theme-dark .section-bottom {
-                background-color: transparent;
-            }
+        .section-bottom {
+            background-image: url("photo.jpg");
+            background-size: cover;
+            background-position: center;
+            display: none;
+            /* Always hide this section as photos are not supported */
+        }
 
-            /* In dark mode, only the top section should be visible. */
-            .theme-dark .section:not(:first-child) {
-                display: none;
-            }
+        .theme-dark .section-top,
+        .theme-dark .section-middle,
+        .theme-dark .section-bottom {
+            background-color: transparent;
+        }
 
-            /* 1. Part of Day */
+        /* In dark mode, only the top section should be visible. */
+        .theme-dark .section:not(:first-child) {
+            display: none;
+        }
+
+        /* 1. Part of Day */
+        .partofday {
+            font-size: 8rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+
+        /* 2. Weekday */
+        .weekday {
+            font-size: 5.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        /* 3. Current Time */
+        .time {
+            font-size: 3.5rem;
+            font-weight: 400;
+        }
+
+        /* 4. Date */
+        .date {
+            font-size: 3.5rem;
+            font-weight: 400;
+        }
+
+        .announcement {
+            font-size: 3.5rem;
+            margin: 1rem;
+        }
+
+        @media (max-width: 768px) {
             .partofday {
-                font-size: 8rem;
-                font-weight: 900;
-                margin-bottom: 1rem;
+                font-size: 6.5rem;
             }
 
-            /* 2. Weekday */
             .weekday {
-                font-size: 5.5rem;
-                font-weight: 600;
-                text-transform: uppercase;
-                margin-bottom: 1rem;
+                font-size: 4.5rem;
             }
 
-            /* 3. Current Time */
             .time {
-                font-size: 3.5rem;
-                font-weight: 400;
+                font-size: 3rem;
             }
 
-            /* 4. Date */
             .date {
-                font-size: 3.5rem;
-                font-weight: 400;
+                font-size: 3rem;
             }
 
             .announcement {
-                font-size: 3.5rem;
-                margin: 1rem;
+                font-size: 3rem;
+            }
+        }
+
+        @media screen and (orientation: portrait) {
+
+            .section-top,
+            .section-bottom {
+                flex: 2;
             }
 
-            @media (max-width: 768px) {
-                .partofday {
-                    font-size: 6.5rem;
-                }
-                .weekday {
-                    font-size: 4.5rem;
-                }
-                .time {
-                    font-size: 3rem;
-                }
-                .date {
-                    font-size: 3rem;
-                }
-                .announcement {
-                    font-size: 3rem;
-                }
+            .section-middle {
+                flex: 1;
+            }
+        }
+
+        @media screen and (orientation: landscape) {
+            .section-top {
+                flex: 2;
             }
 
-            @media screen and (orientation: portrait) {
-                .section-top,
-                .section-bottom {
-                    flex: 2;
-                }
-
-                .section-middle {
-                    flex: 1;
-                }
+            .section-middle {
+                flex: 1;
             }
 
-            @media screen and (orientation: landscape) {
-                .section-top {
-                    flex: 2;
-                }
-
-                .section-middle {
-                    flex: 1;
-                }
-
-                /* Keeping the bottom section hidden in landscape */
-                .section:last-child {
-                    display: none;
-                }
+            /* Keeping the bottom section hidden in landscape */
+            .section:last-child {
+                display: none;
             }
-        </style>
-    </head>
+        }
+    </style>
+</head>
 
-    <body>
-        <div id="container">
-            <div class="section section-top">
-                <div>
-                    <div class="partofday" id="partofday"></div>
-                    <div class="weekday" id="weekday"></div>
-                    <div class="time" id="time"></div>
-                    <div class="date" id="date"></div>
-                </div>
+<body>
+    <div id="container">
+        <div class="section section-top">
+            <div>
+                <div class="partofday" id="partofday"></div>
+                <div class="weekday" id="weekday"></div>
+                <div class="time" id="time"></div>
+                <div class="date" id="date"></div>
             </div>
-            <div class="section section-middle" id="section-middle-div">
-                <div>
-                    <div class="announcement" id="announcement"></div>
-                </div>
-            </div>
-            <div class="section section-bottom"></div>
         </div>
+        <div class="section section-middle" id="section-middle-div">
+            <div>
+                <div class="announcement" id="announcement"></div>
+            </div>
+        </div>
+        <div class="section section-bottom"></div>
+    </div>
 
-        <script src="moment-2.30.1.min.js"></script>
-        <script src="eff_short_wordlist_1.js"></script>
-        <script>
-            (function () {
-                "use strict";
+    <script src="moment-2.30.1.min.js"></script>
+    <script src="eff_short_wordlist_1.js"></script>
+    <script>
+        (function () {
+            "use strict";
 
-                // --- Configuration ---
-                var API_ENDPOINT =
-                    "https://caregiver-tools-dayclock.jrcplus.workers.dev";
-                var FETCH_DATA_INTERVAL = 60 * 60 * 1000; // 60 min
+            // --- Configuration ---
+            var API_ENDPOINT =
+                "https://caregiver-tools-dayclock.jrcplus.workers.dev";
+            var FETCH_DATA_INTERVAL = 60 * 60 * 1000; // 60 min
 
-                // --- DOM Elements ---
-                var containerElement = document.getElementById("container");
-                var middleSectionElement =
-                    document.getElementById("section-middle-div");
+            // --- DOM Elements ---
+            var containerElement = document.getElementById("container");
+            var middleSectionElement =
+                document.getElementById("section-middle-div");
 
-                var partOfDayElement = document.getElementById("partofday");
-                var weekdayElement = document.getElementById("weekday");
-                var timeElement = document.getElementById("time");
-                var dateElement = document.getElementById("date");
-                var announcementElement =
-                    document.getElementById("announcement");
+            var partOfDayElement = document.getElementById("partofday");
+            var weekdayElement = document.getElementById("weekday");
+            var timeElement = document.getElementById("time");
+            var dateElement = document.getElementById("date");
+            var announcementElement =
+                document.getElementById("announcement");
 
-                /**
-                 * Helper function to get a query parameter from the URL.
-                 * Needed for Safari 9 compatibility, which doesn't support URLSearchParams.
-                 * @param {string} name - The name of the query parameter.
-                 * @returns {string|null} The value of the parameter or null if not found.
-                 */
-                function getQueryParam(name) {
-                    name = name.replace(/[\[\]]/g, "\\$&");
-                    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
-                    var results = regex.exec(window.location.href);
-                    if (!results) return null;
-                    if (!results[2]) return "";
-                    return decodeURIComponent(results[2].replace(/\+/g, " "));
+            /**
+             * Helper function to get a query parameter from the URL.
+             * Needed for Safari 9 compatibility, which doesn't support URLSearchParams.
+             * @param {string} name - The name of the query parameter.
+             * @returns {string|null} The value of the parameter or null if not found.
+             */
+            function getQueryParam(name) {
+                name = name.replace(/[\[\]]/g, "\\$&");
+                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
+                var results = regex.exec(window.location.href);
+                if (!results) return null;
+                if (!results[2]) return "";
+                return decodeURIComponent(results[2].replace(/\+/g, " "));
+            }
+
+            /**
+             * Helper function that returns a human-friendly string describing the time until a given date.
+             * @param {string} dateString - An ISO date string (YYYY-MM-DD).
+             * @returns {string} The descriptive string (e.g., "is today", "is in 5 days").
+             */
+            function describeDate(dateString) {
+                var today = moment().startOf("day");
+                var targetDate = moment(dateString, "YYYY-MM-DD").startOf(
+                    "day"
+                );
+
+                if (!targetDate.isValid()) {
+                    return "(invalid date)";
                 }
 
-                /**
-                 * Helper function that returns a human-friendly string describing the time until a given date.
-                 * @param {string} dateString - An ISO date string (YYYY-MM-DD).
-                 * @returns {string} The descriptive string (e.g., "is today", "is in 5 days").
-                 */
-                function describeDate(dateString) {
-                    var today = moment().startOf("day");
-                    var targetDate = moment(dateString, "YYYY-MM-DD").startOf(
-                        "day"
-                    );
+                var deltaDays = targetDate.diff(today, "days");
 
-                    if (!targetDate.isValid()) {
-                        return "(invalid date)";
-                    }
+                if (deltaDays > 1) {
+                    return "in " + deltaDays + " days";
+                } else if (deltaDays === 1) {
+                    return "tomorrow";
+                } else if (deltaDays === 0) {
+                    return "today";
+                } else if (deltaDays === -1) {
+                    return "yesterday";
+                } else if (deltaDays < 0) {
+                    return Math.abs(deltaDays) + " days ago";
+                }
+            }
 
-                    var deltaDays = targetDate.diff(today, "days");
+            /**
+             * Helper function that returns the next occurrence of a given weekday.
+             * @param {string} dayAbbr - Three-letter day abbreviation (MON, TUE, WED, THU, FRI, SAT, SUN).
+             * @returns {string} The descriptive string (e.g., "this Monday", "next Tuesday").
+             */
+            function describeNextWeekday(dayAbbr) {
+                var dayMap = {
+                    SUN: 0,
+                    MON: 1,
+                    TUE: 2,
+                    WED: 3,
+                    THU: 4,
+                    FRI: 5,
+                    SAT: 6
+                };
 
-                    if (deltaDays > 1) {
-                        return "in " + deltaDays + " days";
-                    } else if (deltaDays === 1) {
-                        return "tomorrow";
-                    } else if (deltaDays === 0) {
-                        return "today";
-                    } else if (deltaDays === -1) {
-                        return "yesterday";
-                    } else if (deltaDays < 0) {
-                        return Math.abs(deltaDays) + " days ago";
-                    }
+                var targetDay = dayMap[dayAbbr.toUpperCase()];
+                if (targetDay === undefined) {
+                    return "(invalid day)";
                 }
 
-                /**
-                 * Helper function that returns the next occurrence of a given weekday.
-                 * @param {string} dayAbbr - Three-letter day abbreviation (MON, TUE, WED, THU, FRI, SAT, SUN).
-                 * @returns {string} The descriptive string (e.g., "this Monday", "next Tuesday").
-                 */
-                function describeNextWeekday(dayAbbr) {
-                    var dayMap = {
-                        SUN: 0,
-                        MON: 1,
-                        TUE: 2,
-                        WED: 3,
-                        THU: 4,
-                        FRI: 5,
-                        SAT: 6
-                    };
+                var today = moment().startOf("day");
+                var currentDay = today.day(); // 0 = Sunday, 1 = Monday, etc.
 
-                    var targetDay = dayMap[dayAbbr.toUpperCase()];
+                // Calculate days until target day
+                var daysUntil = targetDay - currentDay;
+                if (daysUntil === 0) {
+                    return "today";
+                }
+                if (daysUntil < 0) {
+                    daysUntil += 7; // Next week
+                }
+
+                if (daysUntil === 1) {
+                    return "tomorrow";
+                } else {
+                    return "in " + daysUntil + " days";
+                }
+            }
+
+            /**
+             * Helper function that returns the next/nearest occurrence from multiple weekdays.
+             * @param {string} daysList - Multiple day abbreviations separated by forward slashes (e.g., "MON/WED/FRI").
+             * @returns {string} The descriptive string for the nearest day.
+             */
+            function describeNextWeekdays(daysList) {
+                var dayMap = {
+                    SUN: 0,
+                    MON: 1,
+                    TUE: 2,
+                    WED: 3,
+                    THU: 4,
+                    FRI: 5,
+                    SAT: 6
+                };
+
+                var today = moment().startOf("day");
+                var currentDay = today.day(); // 0 = Sunday, 1 = Monday, etc.
+
+                var days = daysList.split("/");
+                var nearestDay = null;
+                var minDaysUntil = Infinity;
+
+                for (var i = 0; i < days.length; i++) {
+                    var dayAbbr = days[i].trim().toUpperCase();
+                    var targetDay = dayMap[dayAbbr];
+
                     if (targetDay === undefined) {
-                        return "(invalid day)";
+                        continue; // Skip invalid days
                     }
 
-                    var today = moment().startOf("day");
-                    var currentDay = today.day(); // 0 = Sunday, 1 = Monday, etc.
-
-                    // Calculate days until target day
                     var daysUntil = targetDay - currentDay;
+
+                    // Handle "today" case (0 days until)
                     if (daysUntil === 0) {
                         return "today";
                     }
+
+                    // If the day has already passed this week, look to next week
                     if (daysUntil < 0) {
-                        daysUntil += 7; // Next week
+                        daysUntil += 7;
                     }
 
-                    if (daysUntil === 1) {
-                        return "tomorrow";
-                    } else {
-                        return "in " + daysUntil + " days";
-                    }
-                }
-
-                /**
-                 * Helper function that returns the next/nearest occurrence from multiple weekdays.
-                 * @param {string} daysList - Multiple day abbreviations separated by forward slashes (e.g., "MON/WED/FRI").
-                 * @returns {string} The descriptive string for the nearest day.
-                 */
-                function describeNextWeekdays(daysList) {
-                    var dayMap = {
-                        SUN: 0,
-                        MON: 1,
-                        TUE: 2,
-                        WED: 3,
-                        THU: 4,
-                        FRI: 5,
-                        SAT: 6
-                    };
-
-                    var today = moment().startOf("day");
-                    var currentDay = today.day(); // 0 = Sunday, 1 = Monday, etc.
-
-                    var days = daysList.split("/");
-                    var nearestDay = null;
-                    var minDaysUntil = Infinity;
-
-                    for (var i = 0; i < days.length; i++) {
-                        var dayAbbr = days[i].trim().toUpperCase();
-                        var targetDay = dayMap[dayAbbr];
-
-                        if (targetDay === undefined) {
-                            continue; // Skip invalid days
-                        }
-
-                        var daysUntil = targetDay - currentDay;
-
-                        // Handle "today" case (0 days until)
-                        if (daysUntil === 0) {
-                            return "today";
-                        }
-
-                        // If the day has already passed this week, look to next week
-                        if (daysUntil < 0) {
-                            daysUntil += 7;
-                        }
-
-                        if (daysUntil < minDaysUntil) {
-                            minDaysUntil = daysUntil;
-                            nearestDay = targetDay;
-                        }
-                    }
-
-                    if (nearestDay === null) {
-                        return "(invalid days)";
-                    }
-
-                    if (minDaysUntil === 1) {
-                        return "tomorrow";
-                    } else {
-                        return "in " + minDaysUntil + " days";
+                    if (daysUntil < minDaysUntil) {
+                        minDaysUntil = daysUntil;
+                        nearestDay = targetDay;
                     }
                 }
 
-                /**
-                 * Processes a message string, replacing any known template placeholders with dynamic content.
-                 * Also escapes HTML characters for safety.
-                 * @param {string} message - The raw message from the caregiver.
-                 * @returns {string} The message with placeholders substituted and HTML escaped.
-                 */
-                function processMessage(message) {
-                    if (!message) {
-                        return "";
-                    }
-
-                    // First escape HTML characters
-                    var escapedMessage = message
-                        .replace(/&/g, "&amp;")
-                        .replace(/</g, "&lt;")
-                        .replace(/>/g, "&gt;")
-                        .replace(/"/g, "&quot;")
-                        .replace(/'/g, "&#39;");
-
-                    // Template formats: [YYYY-MM-DD] and [MON/TUE/WED] (single or multiple weekdays)
-                    var dateRegex = /\[([0-9]{4}-[0-9]{2}-[0-9]{2})\]/g;
-                    var dayRegex = /\[([A-Z]{3}(?:\/[A-Z]{3})*)\]/gi;
-
-                    // Replace newlines with <br> tags and process templates
-                    return escapedMessage
-                        .replace(/\n/g, "<br>")
-                        .replace(dateRegex, function (match, dateString) {
-                            return describeDate(dateString);
-                        })
-                        .replace(dayRegex, function (match, daysList) {
-                            // Check if it contains multiple days separated by /
-                            if (daysList.indexOf("/") !== -1) {
-                                return describeNextWeekdays(daysList);
-                            } else {
-                                return describeNextWeekday(daysList);
-                            }
-                        });
+                if (nearestDay === null) {
+                    return "(invalid days)";
                 }
 
-                /**
-                 * Fetches the announcement message from the Worker API.
-                 * @param {string} id - The clock ID.
-                 * @returns {Promise<Object|null>} A promise that resolves with the message data
-                 *   (e.g., { message: "...", imageUrl: "..." }) or null if not found or an error occurs.
-                 */
-                function fetchClockData(id) {
-                    console.debug("fetchClockData: Fetching for ID:", id);
-                    return new Promise(function (resolve) {
-                        if (!id) {
-                            console.warn("fetchClockData: No ID");
-                            resolve(null);
-                            return;
+                if (minDaysUntil === 1) {
+                    return "tomorrow";
+                } else {
+                    return "in " + minDaysUntil + " days";
+                }
+            }
+
+            /**
+             * Processes a message string, replacing any known template placeholders with dynamic content.
+             * Also escapes HTML characters for safety.
+             * @param {string} message - The raw message from the caregiver.
+             * @returns {string} The message with placeholders substituted and HTML escaped.
+             */
+            function processMessage(message) {
+                if (!message) {
+                    return "";
+                }
+
+                // First escape HTML characters
+                var escapedMessage = message
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#39;");
+
+                // Template formats: [YYYY-MM-DD] and [MON/TUE/WED] (single or multiple weekdays)
+                var dateRegex = /\[([0-9]{4}-[0-9]{2}-[0-9]{2})\]/g;
+                var dayRegex = /\[([A-Z]{3}(?:\/[A-Z]{3})*)\]/gi;
+
+                // Replace newlines with <br> tags and process templates
+                return escapedMessage
+                    .replace(/\n/g, "<br>")
+                    .replace(dateRegex, function (match, dateString) {
+                        return describeDate(dateString);
+                    })
+                    .replace(dayRegex, function (match, daysList) {
+                        // Check if it contains multiple days separated by /
+                        if (daysList.indexOf("/") !== -1) {
+                            return describeNextWeekdays(daysList);
+                        } else {
+                            return describeNextWeekday(daysList);
                         }
+                    });
+            }
 
-                        var xhr = new XMLHttpRequest();
-                        xhr.open("GET", API_ENDPOINT + "?clock_id=" + id, true);
+            /**
+             * Fetches the announcement message from the Worker API.
+             * @param {string} id - The clock ID.
+             * @returns {Promise<Object|null>} A promise that resolves with the message data
+             *   (e.g., { message: "...", imageUrl: "..." }) or null if not found or an error occurs.
+             */
+            function fetchClockData(id) {
+                console.debug("fetchClockData: Fetching for ID:", id);
+                return new Promise(function (resolve) {
+                    if (!id) {
+                        console.warn("fetchClockData: No ID");
+                        resolve(null);
+                        return;
+                    }
 
-                        xhr.onreadystatechange = function () {
-                            if (xhr.readyState === 4) {
-                                // 4 = DONE
-                                if (xhr.status === 200) {
-                                    try {
-                                        var response = JSON.parse(
-                                            xhr.responseText
-                                        );
-                                        console.debug(
-                                            "fetchClockData: Data fetched:",
-                                            response
-                                        );
-                                        resolve(response);
-                                    } catch (e) {
-                                        console.error(
-                                            "fetchClockData: Parse error:",
-                                            e,
-                                            "Text:",
-                                            xhr.responseText
-                                        );
-                                        resolve(null);
-                                    }
-                                } else if (xhr.status === 404) {
-                                    console.debug(
-                                        "fetchClockData: 404 for ID:",
-                                        id
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("GET", API_ENDPOINT + "?clock_id=" + id, true);
+
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4) {
+                            // 4 = DONE
+                            if (xhr.status === 200) {
+                                try {
+                                    var response = JSON.parse(
+                                        xhr.responseText
                                     );
-                                    resolve(null); // Explicitly resolve with null for 404
-                                } else {
+                                    console.debug(
+                                        "fetchClockData: Data fetched:",
+                                        response
+                                    );
+                                    resolve(response);
+                                } catch (e) {
                                     console.error(
-                                        "fetchClockData: Fetch error. Status:",
-                                        xhr.status,
+                                        "fetchClockData: Parse error:",
+                                        e,
                                         "Text:",
                                         xhr.responseText
                                     );
                                     resolve(null);
                                 }
-                            }
-                        };
-
-                        xhr.onerror = function () {
-                            console.error("fetchClockData: Network error.");
-                            resolve(null);
-                        };
-
-                        xhr.send();
-                    });
-                }
-
-                var clockId = getQueryParam("id");
-
-                /**
-                 * Updates the time, date, and part of day on the screen.
-                 */
-                function updateTime() {
-                    var now = moment();
-
-                    // Set Date, Weekday, and Time using moment.js for localization
-                    dateElement.textContent = now.format("LL"); // e.g., "July 4, 2025"
-                    weekdayElement.textContent = now.format("dddd"); // e.g., "Friday"
-                    timeElement.textContent = now.format("LT"); // e.g., "3:14 PM"
-
-                    // Determine and display the part of the day
-                    var hour = now.hours();
-                    var partOfDay = "";
-                    var bodyClass = "";
-
-                    if (hour >= 5 && hour < 12) {
-                        partOfDay = "It's Morning";
-                        bodyClass = "morning";
-                    } else if (hour >= 12 && hour < 17) {
-                        partOfDay = "It's Afternoon";
-                        bodyClass = "afternoon";
-                    } else if (hour >= 17 && hour < 21) {
-                        partOfDay = "It's Evening";
-                        bodyClass = "evening";
-                    } else {
-                        partOfDay = "It's Bedtime";
-                        bodyClass = "bedtime";
-                    }
-                    partOfDayElement.textContent = partOfDay;
-
-                    // Add/remove the theme-dark class based on the time of day
-                    if (bodyClass === "bedtime") {
-                        document.body.classList.add("theme-dark");
-                    } else {
-                        document.body.classList.remove("theme-dark");
-                    }
-
-                    // Update the body class for time-based styling
-                    document.body.classList.remove(
-                        "morning",
-                        "afternoon",
-                        "evening",
-                        "bedtime"
-                    );
-                    document.body.classList.add(bodyClass);
-                }
-
-                /**
-                 * Schedules the next updateTime call to occur at the beginning of the next minute.
-                 */
-                function scheduleNextUpdateTime() {
-                    var now = new Date();
-                    var seconds = now.getSeconds();
-                    var milliseconds = now.getMilliseconds();
-
-                    // Calculate milliseconds until the next full minute (seconds = 0, milliseconds = 0)
-                    var delay = (60 - seconds) * 1000 - milliseconds;
-
-                    // If the calculated delay is negative or zero (meaning we are past the minute mark,
-                    // or exactly on it), schedule for the *next* minute.
-                    if (delay <= 0) {
-                        delay += 60 * 1000; // Add a full minute
-                    }
-
-                    setTimeout(function () {
-                        updateTime();
-                        scheduleNextUpdateTime();
-                    }, delay);
-                }
-
-                /**
-                 * Fetches and displays the announcement message, hiding the section if empty or not found.
-                 */
-                function fetchClockDataAndUpdateUI() {
-                    console.debug(
-                        "fetchClockDataAndUpdateUI: Update UI start."
-                    );
-                    fetchClockData(clockId).then(function (responseData) {
-                        if (responseData && responseData.message) {
-                            var rawMessage = responseData.message;
-                            var processedMessage = processMessage(rawMessage);
-                            announcementElement.innerHTML = processedMessage;
-
-                            if (middleSectionElement) {
-                                middleSectionElement.style.display = ""; // Show it
+                            } else if (xhr.status === 404) {
                                 console.debug(
-                                    "fetchClockDataAndUpdateUI: Msg found, UI shown."
+                                    "fetchClockData: 404 for ID:",
+                                    id
                                 );
-                            }
-                        } else {
-                            announcementElement.textContent = ""; // Clear message
-                            if (middleSectionElement) {
-                                middleSectionElement.style.display = "none";
-                                console.debug(
-                                    "fetchClockDataAndUpdateUI: No msg, UI hidden."
+                                resolve(null); // Explicitly resolve with null for 404
+                            } else {
+                                console.error(
+                                    "fetchClockData: Fetch error. Status:",
+                                    xhr.status,
+                                    "Text:",
+                                    xhr.responseText
                                 );
+                                resolve(null);
                             }
                         }
-                    });
+                    };
+
+                    xhr.onerror = function () {
+                        console.error("fetchClockData: Network error.");
+                        resolve(null);
+                    };
+
+                    xhr.send();
+                });
+            }
+
+            var clockId = getQueryParam("id");
+
+            /**
+             * Updates the time, date, and part of day on the screen.
+             */
+            function updateTime() {
+                var now = moment();
+
+                // Set Date, Weekday, and Time using moment.js for localization
+                dateElement.textContent = now.format("LL"); // e.g., "July 4, 2025"
+                weekdayElement.textContent = now.format("dddd"); // e.g., "Friday"
+                timeElement.textContent = now.format("LT"); // e.g., "3:14 PM"
+
+                // Determine and display the part of the day
+                var hour = now.hours();
+                var partOfDay = "";
+                var bodyClass = "";
+
+                if (hour >= 5 && hour < 12) {
+                    partOfDay = "It's Morning";
+                    bodyClass = "morning";
+                } else if (hour >= 12 && hour < 17) {
+                    partOfDay = "It's Afternoon";
+                    bodyClass = "afternoon";
+                } else if (hour >= 17 && hour < 21) {
+                    partOfDay = "It's Evening";
+                    bodyClass = "evening";
+                } else {
+                    partOfDay = "It's Bedtime";
+                    bodyClass = "bedtime";
+                }
+                partOfDayElement.textContent = partOfDay;
+
+                // Add/remove the theme-dark class based on the time of day
+                if (bodyClass === "bedtime") {
+                    document.body.classList.add("theme-dark");
+                } else {
+                    document.body.classList.remove("theme-dark");
                 }
 
-                // --- Double-tap to reload functionality ---
-                // Safari Mobile doesn't support the dblclick event, so we implement
-                // double-tap detection manually by tracking touch/click timing
-                var tapCount = 0;
-                var tapTimeout;
-
-                function handleTap() {
-                    tapCount++;
-
-                    if (tapCount === 1) {
-                        // First tap - wait to see if there's a second one
-                        tapTimeout = setTimeout(function () {
-                            // Single tap - do nothing
-                            tapCount = 0;
-                        }, 300);
-                    } else if (tapCount === 2) {
-                        // Second tap within timeout - double tap detected
-                        clearTimeout(tapTimeout);
-                        tapCount = 0;
-                        location.reload();
-                    }
-                }
-
-                // Use touchend for mobile devices, dblclick for desktop
-                // This prevents the double-firing issue with touchstart + click
-                document.body.addEventListener("touchend", handleTap, false);
-                document.body.addEventListener(
-                    "dblclick",
-                    function () {
-                        location.reload();
-                    },
-                    false
+                // Update the body class for time-based styling
+                document.body.classList.remove(
+                    "morning",
+                    "afternoon",
+                    "evening",
+                    "bedtime"
                 );
+                document.body.classList.add(bodyClass);
+            }
 
-                // --- Initial Setup ---
-                updateTime(); // initial update
-                scheduleNextUpdateTime();
+            /**
+             * Schedules the next updateTime call to occur at the beginning of the next minute.
+             */
+            function scheduleNextUpdateTime() {
+                var now = new Date();
+                var seconds = now.getSeconds();
+                var milliseconds = now.getMilliseconds();
 
-                // Fetch and update message data
-                fetchClockDataAndUpdateUI(); // initial fetch
-                setInterval(function () {
-                    if (!document.body.classList.contains("theme-dark")) {
-                        fetchClockDataAndUpdateUI();
-                    }
-                }, FETCH_DATA_INTERVAL);
-            })();
-        </script>
+                // Calculate milliseconds until the next full minute (seconds = 0, milliseconds = 0)
+                var delay = (60 - seconds) * 1000 - milliseconds;
 
-        <script>
-            window.goatcounter = {
-                path: function (p) {
-                    return location.host + p;
+                // If the calculated delay is negative or zero (meaning we are past the minute mark,
+                // or exactly on it), schedule for the *next* minute.
+                if (delay <= 0) {
+                    delay += 60 * 1000; // Add a full minute
                 }
-            };
-        </script>
-        <script
-            data-goatcounter="https://jrcplus.goatcounter.com/count"
-            async
-            src="//gc.zgo.at/count.js"
-        ></script>
-    </body>
+
+                setTimeout(function () {
+                    updateTime();
+                    scheduleNextUpdateTime();
+                }, delay);
+            }
+
+            /**
+             * Fetches and displays the announcement message, hiding the section if empty or not found.
+             */
+            function fetchClockDataAndUpdateUI() {
+                console.debug(
+                    "fetchClockDataAndUpdateUI: Update UI start."
+                );
+                fetchClockData(clockId).then(function (responseData) {
+                    var rawMessage = "";
+
+                    if (responseData) {
+                        // First check for per-day messages
+                        if (responseData.messages) {
+                            var today = moment().format("ddd").toUpperCase();
+                            rawMessage = responseData.messages[today] || "";
+                        }
+                        // Otherwise check for single_message
+                        else {
+                            if (responseData.single_message !== undefined) {
+                                rawMessage = responseData.single_message;
+                            }
+
+                        }
+                        // Ignore legacy message field completely in new clients
+                    }
+
+                    if (rawMessage) {
+                        var processedMessage = processMessage(rawMessage);
+                        announcementElement.innerHTML = processedMessage;
+
+                        if (middleSectionElement) {
+                            middleSectionElement.style.display = ""; // Show it
+                            console.debug(
+                                "fetchClockDataAndUpdateUI: Msg found, UI shown."
+                            );
+                        }
+                    } else {
+                        announcementElement.textContent = ""; // Clear message
+                        if (middleSectionElement) {
+                            middleSectionElement.style.display = "none";
+                            console.debug(
+                                "fetchClockDataAndUpdateUI: No msg, UI hidden."
+                            );
+                        }
+                    }
+                });
+            }
+
+            // --- Double-tap to reload functionality ---
+            // Safari Mobile doesn't support the dblclick event, so we implement
+            // double-tap detection manually by tracking touch/click timing
+            var tapCount = 0;
+            var tapTimeout;
+
+            function handleTap() {
+                tapCount++;
+
+                if (tapCount === 1) {
+                    // First tap - wait to see if there's a second one
+                    tapTimeout = setTimeout(function () {
+                        // Single tap - do nothing
+                        tapCount = 0;
+                    }, 300);
+                } else if (tapCount === 2) {
+                    // Second tap within timeout - double tap detected
+                    clearTimeout(tapTimeout);
+                    tapCount = 0;
+                    location.reload();
+                }
+            }
+
+            // Use touchend for mobile devices, dblclick for desktop
+            // This prevents the double-firing issue with touchstart + click
+            document.body.addEventListener("touchend", handleTap, false);
+            document.body.addEventListener(
+                "dblclick",
+                function () {
+                    location.reload();
+                },
+                false
+            );
+
+            // --- Initial Setup ---
+            updateTime(); // initial update
+            scheduleNextUpdateTime();
+
+            // Fetch and update message data
+            fetchClockDataAndUpdateUI(); // initial fetch
+            setInterval(function () {
+                if (!document.body.classList.contains("theme-dark")) {
+                    fetchClockDataAndUpdateUI();
+                }
+            }, FETCH_DATA_INTERVAL);
+        })();
+    </script>
+
+    <script>
+        window.goatcounter = {
+            path: function (p) {
+                return location.host + p;
+            }
+        };
+    </script>
+    <script data-goatcounter="https://jrcplus.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+
 </html>

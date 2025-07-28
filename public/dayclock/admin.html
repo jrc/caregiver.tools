@@ -1,201 +1,346 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Day Clock Admin - Caregiver.tools</title>
-        <link rel="stylesheet" href="../style.css" />
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Day Clock Admin - Caregiver.tools</title>
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+        input[type="text"],
+        textarea {
+            font-size: larger;
+            padding: 0.5rem;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="../">Caregiver.tools</a> -
+        <a href="./">Day Clock</a>
+    </nav>
+
+    <main>
+        <h1>Day Clock Admin</h1>
+
+        <p>
+            Bookmark this secret page. This is the only way that you, the
+            caregiver, can customize the Day Clock later.
+        </p>
+        <p>
+            ⚠︎ Only this page’s web address with trusted caregivers. It
+            contains a secret code that identifies your Day Clock.
+        </p>
+
+        <h2>Customize Your Clock</h2>
+
+        <p>
+            Set a custom message to be displayed at the bottom of
+            the Day Clock. Leave blank for no message.
+        </p>
+
+        <div class="tab-container">
+            <input type="radio" id="tab-simple" name="mode" value="simple" checked />
+            <input type="radio" id="tab-advanced" name="mode" value="advanced" />
+
+            <div class="tab-buttons">
+                <label for="tab-simple">Single Message</label>
+                <label for="tab-advanced">Per-Day Messages</label>
+            </div>
+
+            <div class="tab-content-css">
+                <div id="content-simple" class="tab-pane-css">
+                    <textarea id="message-input" placeholder="e.g. Your doctor's appointment is [2025-07-01]."
+                        maxlength="280"></textarea>
+                </div>
+
+                <div id="content-advanced" class="tab-pane-css">
+                    <div class="day-messages">
+                        <div class="day-input">
+                            <label for="message-mon">Monday:</label>
+                            <textarea id="message-mon" maxlength="280"></textarea>
+                        </div>
+                        <div class="day-input">
+                            <label for="message-tue">Tuesday:</label>
+                            <textarea id="message-tue" maxlength="280"></textarea>
+                        </div>
+                        <div class="day-input">
+                            <label for="message-wed">Wednesday:</label>
+                            <textarea id="message-wed" maxlength="280"></textarea>
+                        </div>
+                        <div class="day-input">
+                            <label for="message-thu">Thursday:</label>
+                            <textarea id="message-thu" maxlength="280"></textarea>
+                        </div>
+                        <div class="day-input">
+                            <label for="message-fri">Friday:</label>
+                            <textarea id="message-fri" maxlength="280"></textarea>
+                        </div>
+                        <div class="day-input">
+                            <label for="message-sat">Saturday:</label>
+                            <textarea id="message-sat" maxlength="280"></textarea>
+                        </div>
+                        <div class="day-input">
+                            <label for="message-sun">Sunday:</label>
+                            <textarea id="message-sun" maxlength="280"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="notes">
+            <small>
+                <ul>
+                    <li>
+                        The Day Clock looks for new messages hourly. To make it
+                        update immediately, double-tap on the Day Clock device's
+                        screen.
+                    </li>
+                    <li>
+                        You can write dates in square brackets and they will be
+                        displayed in natural language, like "tomorrow" or "in 3
+                        days". For example: <tt>[2025-07-01]</tt>
+                    </li>
+                </ul>
+            </small>
+        </div>
+
+        <button id="save-message-btn">Save Changes</button>
+        <div id="status-message"></div>
+
         <style>
-            input[type="text"],
-            textarea {
-                font-size: 1.4rem;
-                padding: 1rem;
-                width: 100%;
+            /* Tab/Toggle Implementation */
+            .tab-container input[type="radio"] {
+                display: none;
+            }
+
+            .tab-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                margin: 1rem 0;
+            }
+
+            .tab-buttons label {
+                border-radius: 4px;
+                cursor: pointer;
+                font-family: inherit;
+                font-size: 1rem;
+                line-height: inherit;
+                padding: 0.5rem 1rem;
+
+                /* Inactive pill */
+                background-color: transparent;
+                border: 1px solid transparent;
+                color: rgb(0, 123, 255);
+            }
+
+            .tab-buttons label:hover {
+                color: rgb(0, 86, 179);
+            }
+
+            /* Active pill */
+            #tab-simple:checked~.tab-buttons label[for="tab-simple"],
+            #tab-advanced:checked~.tab-buttons label[for="tab-advanced"] {
+                background-color: rgb(0, 123, 255);
+                border: 1px solid rgb(0, 123, 255);
+                color: white;
+            }
+
+            /* Hide all tab content panes by default */
+            .tab-pane-css {
+                display: none;
+                padding-top: 1rem;
+            }
+
+            /* Show the content pane associated with the checked radio button */
+            #tab-simple:checked~.tab-content-css #content-simple,
+            #tab-advanced:checked~.tab-content-css #content-advanced {
+                display: block;
+            }
+
+            .day-input label {
+                font-weight: bold;
+                margin-bottom: 0.5rem;
             }
         </style>
-    </head>
-    <body>
-        <nav>
-            <a href="../">Caregiver.tools</a> -
-            <a href="./">Day Clock</a>
-        </nav>
+    </main>
 
-        <main>
-            <h1>Day Clock Admin</h1>
+    <script src="script.js"></script>
+    <script>
+        (function () {
+            "use strict";
 
-            <p>
-                Bookmark this secret page. This is the only way that you, the
-                caregiver, can customize the Day Clock later.
-            </p>
-            <p>
-                ⚠︎ Only this page’s web address with trusted caregivers. It
-                contains a secret code that identifies your Day Clock.
-            </p>
+            // --- DOM Elements ---
+            const messageInput = document.getElementById("message-input");
+            const saveMessageBtn = document.getElementById("save-message-btn");
+            const statusMessage = document.getElementById("status-message");
+            const modeRadios = document.getElementsByName("mode");
 
-            <h2>Customize Your Clock</h2>
-
-            <p>
-                You can set a custom message to be displayed at the bottom of
-                the Day Clock.
-            </p>
-            <ul>
-                <li>
-                    The Day Clock looks for new messages hourly. To make it
-                    update immediately, double-tap on the Day Clock device’s
-                    screen.
-                </li>
-                <li>
-                    You can write dates in square brackets and it will be
-                    displayed in natural language, like “tomorrow” or “in 3
-                    days”. For a single day, write
-                    <tt>[YYYY-MM-DD]</tt>. For recurring appointments, write
-                    e.g. <tt>[Mon/Wed/Fri]</tt> (weekday abbreviations,
-                    separated with slashes) to describe the next occurrence of a
-                    single day from that list.
-                </li>
-            </ul>
-
-            <label for="message-input">Custom Message:</label>
-            <textarea
-                id="message-input"
-                placeholder="e.g. Your doctor's appointment is [2025-07-01]. Your caregiver comes [Mon/Wed/Fri]."
-                maxlength="280"
-            ></textarea>
-
-            <button id="save-message-btn">Submit</button>
-            <div id="status-message"></div>
-        </main>
-
-        <script src="script.js"></script>
-        <script>
-            (function () {
-                "use strict";
-
-                // --- DOM Elements ---
-                const messageInput = document.getElementById("message-input");
-                const saveMessageBtn =
-                    document.getElementById("save-message-btn");
-                const statusMessage = document.getElementById("status-message");
-
-                /**
-                 * Displays a status message to the user.
-                 * @param {string} text - The message to display.
-                 * @param {boolean} isError - True if the message is an error.
-                 */
-                function showStatus(text, isError = false) {
-                    statusMessage.textContent = text;
-                    statusMessage.className = isError
-                        ? "alert alert-warning"
-                        : "alert alert-success";
-                    statusMessage.style.display = "block";
-                }
-
-                /**
-                 * Fetches the current message and populates the input field.
-                 * @param {string} clockId - The ID of the clock.
-                 */
-                async function loadCurrentMessage(clockId) {
-                    if (!clockId) return;
-                    try {
-                        const data =
-                            await window.CaregiverTools.fetchCurrentMessage(
-                                clockId
-                            );
-                        if (data) {
-                            messageInput.value = data.message || "";
-                        } else {
-                            messageInput.value = ""; // No message set yet
-                        }
-                    } catch (error) {
-                        console.error("Error loading current message:", error);
-                        showStatus(
-                            "Could not retrieve the current message.",
-                            true
-                        );
-                    }
-                }
-
-                /**
-                 * Saves the message to the backend.
-                 */
-                async function saveMessage(clockIdToSave) {
-                    const message = messageInput.value.trim();
-
-                    if (!clockIdToSave) {
-                        showStatus("Clock ID cannot be empty.", true);
-                        return;
-                    }
-
-                    saveMessageBtn.disabled = true;
-                    saveMessageBtn.textContent = "Submitting...";
-                    statusMessage.style.display = "none";
-
-                    try {
-                        const response = await fetch(
-                            window.CaregiverTools.API_ENDPOINT,
-                            {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    clock_id: clockIdToSave,
-                                    message: message,
-                                    imageUrl: null // For future use
-                                })
-                            }
-                        );
-
-                        if (!response.ok) {
-                            throw new Error(
-                                `Server responded with status: ${response.status}`
-                            );
-                        }
-                        const data = await response.json();
-                        showStatus(
-                            "Done. It can take up to an hour for the device to update.",
-                            false
-                        );
-                    } catch (error) {
-                        console.error("Error saving message:", error);
-                        showStatus("Unable to save.", true);
-                    } finally {
-                        saveMessageBtn.disabled = false;
-                        saveMessageBtn.textContent = "Submit";
-                    }
-                }
-
-                // --- Initial Page Load ---
-
-                // Check for an id in the URL
-                const urlParams = new URLSearchParams(window.location.search);
-                let clockIdFromUrl = urlParams.get("id");
-
-                // If no ID is present, redirect to the main page to generate one
-                if (!clockIdFromUrl) {
-                    window.location.replace("index.html"); // Redirect to the main page
-                    return; // Stop execution
-                }
-
-                // Fetch message for the ID from the URL
-                loadCurrentMessage(clockIdFromUrl);
-
-                // Save Message button now takes the clockId directly
-                saveMessageBtn.addEventListener("click", () =>
-                    saveMessage(clockIdFromUrl)
-                );
-            })();
-        </script>
-
-        <script>
-            window.goatcounter = {
-                path: function (p) {
-                    return location.host + p;
-                }
+            // Day text areas
+            const dayTextAreas = {
+                MON: document.getElementById("message-mon"),
+                TUE: document.getElementById("message-tue"),
+                WED: document.getElementById("message-wed"),
+                THU: document.getElementById("message-thu"),
+                FRI: document.getElementById("message-fri"),
+                SAT: document.getElementById("message-sat"),
+                SUN: document.getElementById("message-sun")
             };
-        </script>
-        <script
-            data-goatcounter="https://jrcplus.goatcounter.com/count"
-            async
-            src="//gc.zgo.at/count.js"
-        ></script>
-    </body>
+
+            /**
+             * Displays a status message to the user.
+             * @param {string} text - The message to display.
+             * @param {boolean} isError - True if the message is an error.
+             */
+            function showStatus(text, isError = false) {
+                statusMessage.textContent = text;
+                statusMessage.className = isError
+                    ? "alert alert-warning"
+                    : "alert alert-success";
+                statusMessage.style.display = "block";
+            }
+
+            /**
+             * Fetches the current message and populates the input fields.
+             * @param {string} clockId - The ID of the clock.
+             */
+            async function loadCurrentMessage(clockId) {
+                if (!clockId) return;
+                try {
+                    // Clear text fields
+                    messageInput.value = "";
+                    Object.values(dayTextAreas).forEach(textarea => textarea.value = "");
+
+                    const data = await window.CaregiverTools.fetchCurrentMessage(clockId);
+                    if (data) {
+                        // Clear single message input
+                        document.querySelector('input[value="simple"]').checked = true;
+
+                        // Check for per-day messages
+                        if (data.messages && Object.keys(data.messages).length > 0) {
+                            // Switch to advanced mode if there are per-day messages
+                            document.querySelector('input[value="advanced"]').checked = true;
+
+                            // Populate day text areas with existing messages
+                            for (var day in dayTextAreas) {
+                                if (dayTextAreas.hasOwnProperty(day)) {
+                                    // Use empty string if the day doesn't exist in data.messages
+                                    dayTextAreas[day].value = data.messages[day] || "";
+                                }
+                            }
+                        }
+
+                        // Check for single message
+                        if (data.single_message !== undefined && data.single_message.length > 0) {
+                            // Switch to simple mode
+                            document.querySelector('input[value="simple"]').checked = true;
+                            messageInput.value = data.single_message;
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error loading current message:", error);
+                    showStatus("Could not retrieve the current message.", true);
+                }
+            }
+
+            /**
+             * Saves the message to the backend.
+             */
+            async function saveMessage(clockIdToSave) {
+                if (!clockIdToSave) {
+                    showStatus("Clock ID cannot be empty.", true);
+                    return;
+                }
+
+                saveMessageBtn.disabled = true;
+                saveMessageBtn.textContent = "Submitting...";
+                statusMessage.style.display = "none";
+
+                const isSimpleMode = document.querySelector('input[name="mode"]:checked').value === 'simple';
+                const payload = {
+                    clock_id: clockIdToSave,
+                    imageUrl: null // For future use
+                };
+
+                // Single message
+                // payload.message = trimmedMessage; // For backward compatibility
+                payload.single_message = messageInput.value.trim();
+
+                // Per-day messages
+                const messages = {};
+                let hasMessages = false;
+                Object.entries(dayTextAreas).forEach(([day, textarea]) => {
+                    const value = textarea.value.trim();
+                    if (value) {
+                        messages[day] = value;
+                        hasMessages = true;
+                    }
+                });
+                payload.messages = messages;
+
+                try {
+                    const response = await fetch(
+                        window.CaregiverTools.API_ENDPOINT,
+                        {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(payload)
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error(
+                            `Server responded with status: ${response.status}`
+                        );
+                    }
+                    const data = await response.json();
+                    showStatus(
+                        "Done. It can take up to an hour for the device to update.",
+                        false
+                    );
+                } catch (error) {
+                    console.error("Error saving message:", error);
+                    showStatus("Unable to save.", true);
+                } finally {
+                    saveMessageBtn.disabled = false;
+                    saveMessageBtn.textContent = "Save Changes";
+                }
+            }
+
+            // --- Initial Page Load ---
+
+            // Check for an id in the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            let clockIdFromUrl = urlParams.get("id");
+
+            // If no ID is present, redirect to the main page to generate one
+            if (!clockIdFromUrl) {
+                window.location.replace("index.html"); // Redirect to the main page
+                return; // Stop execution
+            }
+
+            // Fetch message for the ID from the URL
+            loadCurrentMessage(clockIdFromUrl);
+
+            // Save Message button now takes the clockId directly
+            saveMessageBtn.addEventListener("click", () =>
+                saveMessage(clockIdFromUrl)
+            );
+        })();
+    </script>
+
+    <script>
+        window.goatcounter = {
+            path: function (p) {
+                return location.host + p;
+            }
+        };
+    </script>
+    <script data-goatcounter="https://jrcplus.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+
 </html>

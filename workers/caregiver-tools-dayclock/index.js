@@ -70,16 +70,25 @@ async function handleGet(request) {
 
 /**
  * Handles POST requests to create/update a message.
- * Body format: { "clock_id": "some-id", "message": "hello", "imageUrl": null }
+ * Body format: {
+ *   "clock_id": "some-id",
+ *   "single_message": "message for all days",  // Simple mode
+ *   "messages": {  // Advanced mode (per-day messages)
+ *     "MON": "Monday message",
+ *     "TUE": "Tuesday message",
+ *     // ... other days
+ *   },
+ *   "imageUrl": null  // Reserved for future use
+ * }
  */
 async function handlePost(request) {
   try {
     const body = await request.json();
-    const { clock_id, message, imageUrl } = body;
+    const { clock_id, message, messages, single_message, imageUrl } = body;
 
-    if (!clock_id || typeof message === "undefined") {
+    if (!clock_id || (typeof single_message === "undefined" && !messages)) {
       return new Response(
-        'Request body must include "clock_id" and "message"',
+        'Request body must include "clock_id" and either "single_message" or "messages"',
         {
           status: 400,
           headers: corsHeaders(request.headers.get("Origin"))
@@ -87,10 +96,39 @@ async function handlePost(request) {
       );
     }
 
+    // Validate messages object if present and single_message is not set
+    if (!single_message && messages !== undefined && messages !== null) {
+      if (typeof messages !== 'object') {
+        return new Response(
+          '"messages" must be an object with day codes as keys',
+          {
+            status: 400,
+            headers: corsHeaders(request.headers.get("Origin"))
+          }
+        );
+      }
+      // Validate day codes
+      const validDays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+      for (const day in messages) {
+        if (!validDays.includes(day)) {
+          return new Response(
+            'Invalid day code in messages. Must be MON, TUE, WED, THU, FRI, SAT, SUN',
+            {
+              status: 400,
+              headers: corsHeaders(request.headers.get("Origin"))
+            }
+          );
+        }
+      }
+    }
+
     // The data to store in KV
     const dataToStore = {
-      message: message,
-      imageUrl: imageUrl || null, // Allow for future use
+      // For backward compatibility, mirror single_message to message field
+      message: single_message || "",  // Old clients: show single_message or nothing
+      single_message: single_message || "",  // New clients: simple mode
+      messages: single_message ? null : (messages || null),  // New clients: advanced mode
+      imageUrl: imageUrl || null,
       lastUpdated: new Date().toISOString()
     };
 
@@ -102,7 +140,9 @@ async function handlePost(request) {
       status: "success",
       clock_id: clock_id,
       message: dataToStore.message,
-      imageUrl: dataToStore.imageUrl
+      messages: dataToStore.messages,
+      imageUrl: dataToStore.imageUrl,
+      lastUpdated: dataToStore.lastUpdated
     };
 
     return new Response(JSON.stringify(responsePayload), {
