@@ -189,10 +189,13 @@
             }
         }
 
-        /* iPhone 6 Plus (and similar phones) in Portrait */
+
+        /* Small phones (iPhone 6 Plus, SE, etc.) in Portrait */
         @media (max-width: 480px) {
             .partofday {
                 font-size: 4rem;
+                font-weight: 700;
+                /* Reduced from 900 for older Safari rendering */
             }
 
             .weekday {
@@ -212,12 +215,51 @@
             }
         }
 
-        /* iPhone 6 Plus (and similar phones) in Landscape */
+        /* Small phones (iPhone 6 Plus, SE, etc.) in Portrait */
+        @media (max-width: 480px) {
+            .partofday {
+                font-size: 4rem;
+                font-weight: 700;
+                /* Reduced from 900 for older Safari rendering */
+            }
+
+            .weekday {
+                font-size: 2.8rem;
+            }
+
+            .time {
+                font-size: 2rem;
+            }
+
+            .date {
+                font-size: 2rem;
+            }
+
+            .announcement {
+                font-size: 2rem;
+            }
+        }
+
+        /* Ultra-small phones (iPhone SE 1st gen) in Portrait */
+        @media (max-width: 375px) {
+            .partofday {
+                font-size: 3.2rem;
+                /* Scaled down to prevent wrapping */
+            }
+        }
+
+        /* Small phones (iPhone 6 Plus, SE, etc.) in Landscape */
         @media (max-height: 480px) {
+            .section {
+                padding-bottom: 1.5rem;
+                /* Added bottom padding to prevent hugging the edge */
+            }
+
             .partofday {
                 font-size: 3rem;
+                font-weight: 700;
+                /* Reduced from 900 for older Safari rendering */
                 margin-bottom: 0.5rem;
-                /* Reduced to fit vertical space */
             }
 
             .weekday {
