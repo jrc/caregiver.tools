@@ -188,6 +188,56 @@
                 display: none;
             }
         }
+
+        /* iPhone 6 Plus (and similar phones) in Portrait */
+        @media (max-width: 480px) {
+            .partofday {
+                font-size: 4rem;
+            }
+
+            .weekday {
+                font-size: 2.8rem;
+            }
+
+            .time {
+                font-size: 2rem;
+            }
+
+            .date {
+                font-size: 2rem;
+            }
+
+            .announcement {
+                font-size: 2rem;
+            }
+        }
+
+        /* iPhone 6 Plus (and similar phones) in Landscape */
+        @media (max-height: 480px) {
+            .partofday {
+                font-size: 3rem;
+                margin-bottom: 0.5rem;
+                /* Reduced to fit vertical space */
+            }
+
+            .weekday {
+                font-size: 2.2rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .time {
+                font-size: 1.5rem;
+            }
+
+            .date {
+                font-size: 1.5rem;
+            }
+
+            .announcement {
+                font-size: 1.8rem;
+                margin: 0.5rem;
+            }
+        }
     </style>
 </head>
 
